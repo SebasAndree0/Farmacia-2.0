@@ -2,51 +2,54 @@ import { Injectable } from '@angular/core';
 import { Usuario, UsuarioConIdo, UsuarioParcial } from '../modelos/usuario';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiUsuarioService {
 
-public url_usuario =  'http://localhost:3000/usuario';
-public paginaActualUsuario = 1;
-private comLista = new BehaviorSubject<Array<UsuarioConIdo>>([]);
+  // ✅ ahora apunta al backend (por env)
+  public url_usuario = `${environment.apiUrl}/usuario`;
 
+  public paginaActualUsuario = 1;
+  private comLista = new BehaviorSubject<Array<UsuarioConIdo>>([]);
 
-public listaUsuario$ = this.comLista.asObservable();
+  public listaUsuario$ = this.comLista.asObservable();
 
   constructor(
-    private http:HttpClient
-  ) {
+    private http: HttpClient
+  ) {}
+
+  public agregarUsuario(usuario: Usuario) {
+    return this.http.post(this.url_usuario, usuario, {
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      }
+    });
   }
 
-public agregarUsuario(usuario: Usuario){
-    return this.http.post(this.url_usuario,usuario,{
-      headers: {
-        'Content-Type':'application/json;charset=utf-8'
-      }
-    })
-  }
-  public getUsuario():Observable<Usuario[]>{
+  public getUsuario(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(this.url_usuario);
   }
 
-  public idUsuario(id){
+  public idUsuario(id: any) {
     localStorage.setItem('ID', id);
   }
 
-  public retornarId(){
+  public retornarId() {
     return localStorage.getItem('ID');
   }
 
-  public obtenerPrimerosUsuarios(){
+  public obtenerPrimerosUsuarios() {
     this.http.get<UsuarioConIdo[]>(`${this.url_usuario}?_page=1`).pipe()
-    .subscribe(resp =>{
-      this.paginaActualUsuario = this.paginaActualUsuario+1;
-      this.comLista.next(resp);
-    })
+      .subscribe(resp => {
+        this.paginaActualUsuario = this.paginaActualUsuario + 1;
+        this.comLista.next(resp);
+      });
   }
 
-  public obtenerUsuarioPorID(id: number): Observable<UsuarioConIdo| null> {
+  public obtenerUsuarioPorID(id: number): Observable<UsuarioConIdo | null> {
     return this.http.get<UsuarioConIdo | null>(`${this.url_usuario}/${id}`);
   }
 
@@ -55,36 +58,34 @@ public agregarUsuario(usuario: Usuario){
       headers: {
         'Content-Type': 'application/json; charset=utf-8'
       }
-    })
+    });
   }
 
   public eliminarUsuarioPorID(id: number): Observable<any> {
-    return this.http.delete(`${this.url_usuario}/${id}`)
+    return this.http.delete(`${this.url_usuario}/${id}`);
   }
 
-  public tipoUsuario(id){
+  public tipoUsuario(id: any) {
     localStorage.setItem('tipo', id);
   }
 
-  public retornarTipo(){
+  public retornarTipo() {
     return localStorage.getItem('tipo');
   }
 
-  public ingresoUsuario(id){
+  public ingresoUsuario(id: any) {
     localStorage.setItem('tipoIngreso', id);
   }
 
-  public retornarIngreso(){
+  public retornarIngreso() {
     return localStorage.getItem('tipoIngreso');
   }
 
-  public nombreUsuario(id){
+  public nombreUsuario(id: any) {
     localStorage.setItem('nombreUsuario', id);
   }
 
-  public retornarUsuario(){
+  public retornarUsuario() {
     return localStorage.getItem('nombreUsuario');
   }
-
 }
-

@@ -1,0 +1,158 @@
+/* Fondo */
+.eu-content {
+  --background: #0b1220;
+}
+
+/* Header */
+.eu-header {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.eu-topbar {
+  --background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 45%, #0f172a 100%);
+  --color: #ffffff;
+}
+
+.eu-topbar ion-title {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.eu-back {
+  --color: #fff;
+}
+
+/* Centrado */
+.eu-wrap {
+  padding: 16px 12px 26px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Card pro */
+.eu-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+/* Hero imagen */
+.eu-hero {
+  position: relative;
+  height: 210px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.eu-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.05) contrast(1.05);
+}
+
+/* Badge rol */
+.eu-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #0b1220;
+  background: #e5e7eb;
+}
+
+.eu-badge.admin {
+  background: #fbbf24;
+}
+.eu-badge.qf {
+  background: #22c55e;
+}
+.eu-badge.cliente {
+  background: #60a5fa;
+}
+.eu-badge.otro {
+  background: #e5e7eb;
+}
+
+/* Head */
+.eu-head {
+  padding: 14px 16px 8px;
+}
+
+.eu-name {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.eu-sub {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-weight: 700;
+}
+
+/* Body */
+.eu-body {
+  padding: 12px 16px 16px;
+}
+
+/* Warning box */
+.eu-warning {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 12px;
+  border-radius: 14px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  margin-bottom: 14px;
+}
+
+.eu-warning ion-icon {
+  font-size: 20px;
+  color: #fbbf24;
+  margin-top: 2px;
+}
+
+.eu-warning-title {
+  color: #fff;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.eu-warning-text {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Botón eliminar pro */
+.eu-delete {
+  --border-radius: 14px;
+  height: 46px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+/* Cancelar */
+.eu-cancel {
+  margin-top: 6px;
+  --color: rgba(255, 255, 255, 0.8);
+  font-weight: 900;
+}
+
+/* Skeleton */
+.eu-skeleton {
+  padding: 10px;
+}

@@ -1,34 +1,59 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>eliminarUsuario</ion-title>
+<ion-header class="eu-header">
+  <ion-toolbar class="eu-topbar">
+    <ion-buttons slot="start">
+      <ion-button [routerLink]="['/roles']" fill="clear" class="eu-back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Eliminar usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="eu-content">
+  <div class="eu-wrap">
+    <ion-card class="eu-card" *ngIf="usuarioactivo">
+      <div class="eu-hero">
+        <img
+          class="eu-img"
+          [src]="getPhoto(usuarioactivo)"
+          [alt]="usuarioactivo.nombre"
+          (error)="onImgError($event)"
+        />
+        <div class="eu-badge" [ngClass]="badgeClass(usuarioactivo.tipo)">
+          {{ usuarioactivo.tipo }}
+        </div>
+      </div>
 
+      <ion-card-header class="eu-head">
+        <ion-card-title class="eu-name">{{ usuarioactivo.nombre }}</ion-card-title>
+        <ion-card-subtitle class="eu-sub">ID: {{ usuarioactivo.id }}</ion-card-subtitle>
+      </ion-card-header>
 
-  <ion-card *ngIf="usuarioactivo">
+      <ion-card-content class="eu-body">
+        <div class="eu-warning">
+          <ion-icon name="warning-outline"></ion-icon>
+          <div>
+            <div class="eu-warning-title">Cuidado</div>
+            <div class="eu-warning-text">Esta acción no se puede deshacer.</div>
+          </div>
+        </div>
 
-    <ion-card-header>
-      <ion-card-title>
-        {{ usuarioactivo.nombre }}
-      </ion-card-title>
-      <ion-card-subtitle>
-        {{usuarioactivo.tipo}}
-      </ion-card-subtitle>
-    </ion-card-header>
+        <ion-button expand="block" class="eu-delete" color="danger" (click)="borrar()">
+          <ion-icon name="trash-bin-outline" slot="start"></ion-icon>
+          Eliminar definitivamente
+        </ion-button>
 
-    <ion-card-content style="display: flex; justify-content: space-between;">
-      <ion-button [routerLink]="['/roles']" color="primary">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-      <ion-button color="danger" (click)="borrar()">
-        <ion-icon name="trash-bin-outline"></ion-icon>
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+        <ion-button expand="block" class="eu-cancel" fill="clear" [routerLink]="['/roles']">
+          Cancelar
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
 
-
-
-
+    <ion-card class="eu-card" *ngIf="!usuarioactivo">
+      <ion-card-header class="eu-head">
+        <ion-card-title class="eu-name">Cargando...</ion-card-title>
+        <ion-card-subtitle class="eu-sub">Esperando datos</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+  </div>
 </ion-content>

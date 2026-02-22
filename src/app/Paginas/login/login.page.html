@@ -1,123 +1,124 @@
-<ion-header>
+<ion-header class="login-header" translucent="true">
   <ion-toolbar>
-    <ion-title>Login</ion-title>
-
-
-</ion-toolbar>
-
-
+    <ion-title>Farmacia</ion-title>
+  </ion-toolbar>
 </ion-header>
-<ion-content>
 
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="login-shell">
+    <ion-card class="login-card">
+      <ion-card-header class="login-card-header">
+        <div class="brand">
+          <ion-img
+            #iconoAnim
+            class="brand-logo"
+            src="https://static.vecteezy.com/system/resources/previews/007/438/687/non_2x/illustration-of-a-pharmacy-health-pharmacy-logo-free-vector.jpg"
+            alt="Logo Farmacia"
+          ></ion-img>
 
+          <div class="brand-text">
+            <ion-card-title class="brand-title">Bienvenido</ion-card-title>
+            <ion-card-subtitle class="brand-subtitle">Inicia sesión para continuar</ion-card-subtitle>
+          </div>
+        </div>
+      </ion-card-header>
 
+      <ion-card-content>
+        <form [formGroup]="formularioLogin" (ngSubmit)="ingresar()">
+          <!-- Usuario -->
+          <ion-item class="field" lines="inset">
+            <ion-icon name="person-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input
+              formControlName="nombre"
+              autocomplete="username"
+              enterkeyhint="next"
+              (ionFocus)="animacion()"
+            ></ion-input>
+          </ion-item>
 
-  <ion-card style="text-align:center">
-    <ion-card-header>
-      <ion-card-title color="dark">Login</ion-card-title>
-      <ion-img #iconoAnim src="https://static.vecteezy.com/system/resources/previews/007/438/687/non_2x/illustration-of-a-pharmacy-health-pharmacy-logo-free-vector.jpg" class="img"></ion-img>
+          <div class="errors" *ngIf="showErrors('nombre')">
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['required']">• Este campo es obligatorio</ion-text>
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['minlength']">• Mínimo 3 caracteres</ion-text>
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['maxlength']">• Máximo 20 caracteres</ion-text>
+          </div>
 
-    </ion-card-header>
-    <ion-card-content>
-      <form [formGroup]="formularioLogin">
-        <ion-item  >
-          <ion-label position="floating" style="font-weight:bold">Nombre</ion-label>
-          <ion-input  (click)="animacion()" formControlName="nombre"></ion-input>
-          <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.required && fueTocado('nombre') "
-       >
-       Este campo es obligatorio
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.maxlength && fueTocado('nombre') "
-      >
-        Los caracteres maximos son 20
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.minlength && fueTocado('nombre') "
-      >
-        Los caracteres minimos son 3
-      </ion-note>
-        </ion-item>
-<ion-item>
-          <ion-label position="floating" style="font-weight:bold">Contraseña</ion-label>
-          <ion-input (click)="animacion()" formControlName="contraseña" type="password"></ion-input>
-          <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.required && fueTocado('contraseña') "
-       >
-       Este campo es obligatorio
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.maxlength && fueTocado('contraseña') "
-      >
-        Los caracteres maximos son 20
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.minlength && fueTocado('contraseña') "
-      >
-        Los caracteres minimos son 3
-      </ion-note>
-        </ion-item>
-      </form>
-      <br>
-      <ion-button color="danger" style="margin-left: 10px"  (click)="startLoad()" (click)="ingresar()">
-        Ingresar
-        <ion-icon name="reload" slot="end" #loadingIcon></ion-icon>
-      </ion-button>
-      <ion-button [routerLink]="['/registro']"color="danger" style="margin-left: 10px">Registrarse</ion-button>
-    </ion-card-content>
-  </ion-card>
+          <!-- Password -->
+          <ion-item class="field" lines="inset">
+            <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
+
+            <ion-input
+              formControlName="contraseña"
+              [type]="showPassword ? 'text' : 'password'"
+              autocomplete="current-password"
+              enterkeyhint="done"
+              (ionFocus)="animacion()"
+            ></ion-input>
+
+            <ion-button
+              fill="clear"
+              size="small"
+              class="eye-btn"
+              type="button"
+              slot="end"
+              (click)="togglePassword()"
+              aria-label="Mostrar u ocultar contraseña"
+            >
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <div class="errors" *ngIf="showErrors('contraseña')">
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['required']">• Este campo es obligatorio</ion-text>
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['minlength']">• Mínimo 3 caracteres</ion-text>
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['maxlength']">• Máximo 20 caracteres</ion-text>
+          </div>
+
+          <ion-button
+            expand="block"
+            class="primary-btn"
+            type="submit"
+            [disabled]="formularioLogin.invalid || isLoading"
+          >
+            <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+            <span>{{ isLoading ? 'Ingresando...' : 'Ingresar' }}</span>
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="secondary-btn"
+            type="button"
+            [disabled]="isLoading"
+            [routerLink]="['/registro']"
+          >
+            Crear cuenta
+          </ion-button>
+        </form>
+
+        <div class="helper">
+          <ion-text color="medium">Tip: Usa tu usuario y contraseña registrados.</ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
-<ion-footer>
+
+<ion-footer class="login-footer">
   <ion-toolbar>
     <ion-tabs>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button [routerLink]="['/medicamentos']" >
+        <ion-tab-button [routerLink]="['/medicamentos']">
           <ion-icon name="arrow-undo-outline"></ion-icon>
           <ion-label>Volver</ion-label>
-
         </ion-tab-button>
 
-        <ion-tab-button [routerLink]="['/']" >
+        <ion-tab-button [routerLink]="['/']">
           <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
           <ion-label>Inicio</ion-label>
         </ion-tab-button>
-
-
       </ion-tab-bar>
     </ion-tabs>
   </ion-toolbar>
 </ion-footer>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style>
-
-  .img {
-    width: 100%;
-    max-width: 500px;
-    display: block;
-    margin: auto;
-  }
-
-
-
-  </style>

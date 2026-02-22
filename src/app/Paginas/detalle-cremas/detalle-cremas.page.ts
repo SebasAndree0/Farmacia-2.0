@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+// C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\detalle-cremas\detalle-cremas.page.ts
+
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AnimationController, ModalController } from '@ionic/angular';
 import { CarritoPage } from '../carrito/carrito.page';
-import { Carrito } from '../modelos/carrito';
 import { ProductoId } from '../modelos/productos';
 import { ApiProductoService } from '../servicios/api-producto.service';
 import { ApiUsuarioService } from '../servicios/api-usuario.service';
@@ -14,179 +14,165 @@ import { ApiUsuarioService } from '../servicios/api-usuario.service';
   styleUrls: ['./detalle-cremas.page.scss'],
 })
 export class DetalleCremasPage implements OnInit {
-
-
-  @ViewChild('cartBtn', { read: ElementRef }) cartBnt: ElementRef;
-  @ViewChild('cartFabBtn', { read: ElementRef }) cartFabBnt: ElementRef;
-
+  @ViewChild('cartBtn', { read: ElementRef }) cartBnt!: ElementRef;
+  @ViewChild('cartFabBtn', { read: ElementRef }) cartFabBnt!: ElementRef;
 
   public idActiva: number = 0;
   public productoActivo!: ProductoId;
-  public productos: Array<ProductoId> = [];
-  carrito: Carrito;
+
   public usuarioId = '';
   public nombreUsuario = '';
 
-
-
-
   constructor(
-
     private rutaActiva: ActivatedRoute,
     private router: Router,
     private apiProducto: ApiProductoService,
     private apiUsuario: ApiUsuarioService,
-    private http: HttpClient,
     private modalCtrl: ModalController,
-    private animationCtrl:AnimationController
-
-
-  ) { }
+    private animationCtrl: AnimationController
+  ) {}
 
   ngOnInit() {
-
-
-    this.rutaActiva.paramMap.subscribe(parametros => {
-      this.idActiva = +parametros.get('idProducto') // null;
-      this.apiProducto.obtenerProductoPorID(this.idActiva)
-      .subscribe(datos => {
-        if(datos){
-          this.productoActivo = datos;
-        }else {
-          this.router.navigate(['']);
-        }
-      })
-    });
-
     this.usuarioId = this.apiUsuario.retornarId();
     this.nombreUsuario = this.apiUsuario.retornarUsuario();
 
+    // ✅ cuando cambie stock desde carrito u otra pantalla -> refresca sin F5
+    this.apiProducto.stockChanged$.subscribe(() => {
+      if (this.idActiva) this.recargarProducto();
+    });
 
+    this.rutaActiva.paramMap.subscribe((parametros) => {
+      this.idActiva = Number(parametros.get('idProducto'));
 
+      if (!this.idActiva) {
+        this.router.navigate(['']);
+        return;
+      }
+
+      this.recargarProducto();
+    });
   }
 
-  public id = this.apiUsuario.retornarId();
-  addToCart(nombre: string, precio: number, imagen:string, cantidad: number, stock:number){
-  this.http.get<any>(this.apiProducto.url_carrito).subscribe(data => {
-    const producto = data.find((a: any) => {
-      return a.idUsuario == this.id &&
-        a.idProducto == this.idActiva
-
-
-      });
-      if (producto){
-        const carrito: Carrito ={
-          "nombre": nombre,
-          "precio": precio,
-          "imagen": imagen,
-          "idUsuario": this.usuarioId,
-          "cantidad": producto.cantidad += 1,
-          "idProducto": this.idActiva,
-          "stock":stock,
-          "nombreUsuario":this.nombreUsuario
-        }
-        alert("Producto agregado al carro");
-           this.apiProducto.incrementarProducto(producto.id, producto).subscribe((res)=>{
-           console.log(producto.cantidad)
-          });
-      }
-      else {
-        const carrito: Carrito ={
-                "nombre": nombre,
-                "precio": precio,
-                "imagen": imagen,
-                "idUsuario": this.usuarioId,
-                "cantidad": cantidad,
-                "idProducto": this.idActiva,
-                "stock":stock,
-                "nombreUsuario":this.nombreUsuario
-              }
-            this.apiProducto.addProduct(carrito);
-            alert("Producto agregado al carro");
-          }
-
-
-      });
+  addToCart(nombre: string, precio: number, imagen: string, _cantidad: number, stock: number) {
+    const stockActual = Number(stock ?? 0);
+    if (stockActual <= 0) {
+      alert('Sin stock suficiente');
+      return;
     }
 
-    async openCart(){
-      let modal= await this.modalCtrl.create({
-        component: CarritoPage,
-        cssClass: 'carrito/:idUsuario'
-      });
-      modal.present();
+    // 1) bajar stock en producto (esto ya dispara stockChanged$ en el service)
+    this.apiProducto.stockProducto(this.idActiva, { stock: stockActual - 1 }).subscribe({
+      next: () => {
+        // 2) agregar al carrito (backend evita duplicados y suma cantidad)
+        const carrito: any = {
+          id: this.idActiva, // 👈 backend usa "id" como idProducto
+          nombre,
+          precio: Number(precio),
+          imagen,
+          idUsuario: Number(this.usuarioId),
+          cantidad: 1,
+          stock: stockActual - 1, // opcional para UI
+          nombreUsuario: this.nombreUsuario,
+        };
 
-    }
+        this.apiProducto.addProduct(carrito).subscribe({
+          next: async () => {
+            // refrescar stock en la vista de producto (extra, por si acaso)
+            this.recargarProducto();
 
-    addToCartCarrito() {
-      const cartAnimation = this.animationCtrl.create('cart-animation')
-        .addElement(this.cartBnt.nativeElement)
-        .keyframes([
-          { offset: 0, transform: 'scale(1)' },
-          { offset: 0.5, transform: 'scale(1.2)' },
-          { offset: 0.8, transform: 'scale(0.9)' },
-          { offset: 1, transform: 'scale(1)' }
-        ]);
+            // abrir carrito modal grande
+            await this.openCart();
+          },
+          error: (err) => {
+            console.error('POST carrito ERROR', err);
+            alert('Error al agregar al carrito ❌');
 
-      const cartColorAnimation = this.animationCtrl.create('cart-color-animation')
-        .addElement(this.cartFabBnt.nativeElement)
-        .fromTo('transform', 'rotate(0deg)', 'rotate(45deg)');
-
-
-      const parent = this.animationCtrl.create('parent')
-        .duration(300)
-        .easing('ease-out')
-        .iterations(2)
-        .direction('alternate')
-        .addAnimation([cartColorAnimation, cartAnimation]);
-
-      // Playing the parent starts both animations
-      parent.play();
-    }
-
-
-    handleRefresh(event) {
-      setTimeout(() => {
-
-        this.rutaActiva.paramMap.subscribe(parametros => {
-          this.idActiva = +parametros.get('idProducto') // null;
-          this.apiProducto.obtenerProductoPorID(this.idActiva)
-          .subscribe(datos => {
-            if(datos){
-              this.productoActivo = datos;
-            }else {
-              this.router.navigate(['']);
-            }
-          })
+            // revert de stock si falló el carrito (esto también dispara stockChanged$)
+            this.apiProducto.stockProducto(this.idActiva, { stock: stockActual }).subscribe({
+              next: () => this.recargarProducto(),
+              error: () => {},
+            });
+          },
         });
+      },
+      error: (err) => {
+        console.error('PATCH stock ERROR', err);
+        alert('No se pudo actualizar stock ❌');
+      },
+    });
+  }
 
-        this.usuarioId = this.apiUsuario.retornarId();
+  private recargarProducto() {
+    this.apiProducto.obtenerProductoPorID(this.idActiva).subscribe({
+      next: (datos) => {
+        if (datos) this.productoActivo = datos;
+        else this.router.navigate(['']);
+      },
+      error: (err) => {
+        console.error('ERROR obtenerProductoPorID', err);
+        alert('Error cargando producto ❌');
+      },
+    });
+  }
 
-        // Any calls to load data go here
+  // ✅ ABRE CARRITO y si el usuario aprieta "COMPRAR" -> navega a /medio-pago
+  async openCart() {
+    const modal = await this.modalCtrl.create({
+      component: CarritoPage,
+      cssClass: 'carrito-modal-grande',
+      componentProps: { idUsuario: this.usuarioId },
+    });
 
-        event.target.complete();
+    await modal.present();
 
-      }, 2000);
+    // ✅ AQUÍ ESTABA EL FALLO: antes no escuchabas el dismiss
+    const { data } = await modal.onDidDismiss();
 
+    // Si en el carrito apretaron COMPRAR, CarritoPage devuelve { action:'checkout', total, cart, usuarioId }
+    if (data?.action === 'checkout') {
+      await this.router.navigate(['/medio-pago'], {
+        state: {
+          cart: data.cart ?? [],
+          total: data.total ?? 0,
+          usuarioId: data.usuarioId ?? this.usuarioId,
+        },
+      });
+    }
+  }
 
-    };
+  addToCartCarrito() {
+    if (!this.cartBnt?.nativeElement || !this.cartFabBnt?.nativeElement) return;
 
+    const cartAnimation = this.animationCtrl
+      .create('cart-animation')
+      .addElement(this.cartBnt.nativeElement)
+      .keyframes([
+        { offset: 0, transform: 'scale(1)' },
+        { offset: 0.5, transform: 'scale(1.2)' },
+        { offset: 0.8, transform: 'scale(0.9)' },
+        { offset: 1, transform: 'scale(1)' },
+      ]);
 
+    const cartColorAnimation = this.animationCtrl
+      .create('cart-color-animation')
+      .addElement(this.cartFabBnt.nativeElement)
+      .fromTo('transform', 'rotate(0deg)', 'rotate(45deg)');
 
+    const parent = this.animationCtrl
+      .create('parent')
+      .duration(300)
+      .easing('ease-out')
+      .iterations(2)
+      .direction('alternate')
+      .addAnimation([cartColorAnimation, cartAnimation]);
 
+    parent.play();
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  handleRefresh(event: any) {
+    setTimeout(() => {
+      this.recargarProducto();
+      event.target.complete();
+    }, 600);
+  }
 }

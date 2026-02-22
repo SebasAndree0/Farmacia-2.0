@@ -1,79 +1,108 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>modificarUsuario</ion-title>
+<ion-header class="mu-header">
+  <ion-toolbar class="mu-topbar">
+    <ion-buttons slot="start">
+      <ion-button [routerLink]="['/roles']" fill="clear" class="mu-back">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Modificar usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="mu-content">
+  <div class="mu-wrap">
+    <ion-card class="mu-card">
+      <ion-card-header class="mu-card-header">
+        <ion-card-title class="mu-title">Editar datos</ion-card-title>
+        <ion-card-subtitle class="mu-subtitle">
+          Actualiza nombre y rol del usuario
+        </ion-card-subtitle>
+      </ion-card-header>
 
+      <ion-card-content>
+        <form [formGroup]="formulario" novalidate (ngSubmit)="modificar()">
 
+          <!-- Nombre -->
+          <ion-item class="mu-item" lines="none">
+            <ion-label position="stacked" class="mu-label">Nombre</ion-label>
+            <ion-input
+              class="mu-input"
+              type="text"
+              formControlName="nombre"
+              placeholder="Ej: Sebastián Pérez"
+            ></ion-input>
+          </ion-item>
 
+          <div class="mu-errors" *ngIf="fueTocado('nombre') && campo('nombre').invalid">
+            <ion-text class="mu-error" *ngIf="campo('nombre').errors?.required">
+              Este campo es requerido
+            </ion-text>
+            <ion-text class="mu-error" *ngIf="campo('nombre').errors?.minlength">
+              Los caracteres mínimos son 3
+            </ion-text>
+            <ion-text class="mu-error" *ngIf="campo('nombre').errors?.maxlength">
+              Los caracteres máximos son 30
+            </ion-text>
+          </div>
 
+          <!-- Tipo -->
+          <ion-item class="mu-item" lines="none">
+            <ion-label position="stacked" class="mu-label">Tipo Rol</ion-label>
+            <ion-input
+              class="mu-input"
+              type="text"
+              formControlName="tipo"
+              placeholder="ADMIN / QF / CLIENTE"
+            ></ion-input>
+          </ion-item>
 
-  <ion-card>
+          <div class="mu-errors" *ngIf="fueTocado('tipo') && campo('tipo').invalid">
+            <ion-text class="mu-error" *ngIf="campo('tipo').errors?.required">
+              Este campo es requerido
+            </ion-text>
+            <ion-text class="mu-error" *ngIf="campo('tipo').errors?.minlength">
+              Los caracteres mínimos son 3
+            </ion-text>
+            <ion-text class="mu-error" *ngIf="campo('tipo').errors?.maxlength">
+              Los caracteres máximos son 30
+            </ion-text>
+          </div>
 
-    <form [formGroup]="formulario" novalidate (ngSubmit)="modificar()" >
+          <!-- Botón -->
+          <ion-button
+            class="mu-save"
+            expand="block"
+            type="submit"
+            [disabled]="formulario.invalid"
+          >
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Guardar cambios
+          </ion-button>
 
-      <ion-item>
-        <ion-label position="floating">Nombre</ion-label>
-        <ion-input type="text" formControlName="nombre"></ion-input>
-        <ion-note
-        slot="error"
-          *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.required && fueTocado('nombre') "
-        >
-          Este campo es requerido
-        </ion-note>
-        <ion-note
-        slot="error"
-          *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.maxlength && fueTocado('nombre') "
-        >
-          Los caracteres maximos son 30
-        </ion-note>
-        <ion-note
-        slot="error"
-          *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.minlength && fueTocado('nombre') "
-        >
-          Los caracteres minimos son 3
-        </ion-note>
-      </ion-item>
+          <ion-button
+            class="mu-cancel"
+            expand="block"
+            fill="clear"
+            type="button"
+            [routerLink]="['/roles']"
+          >
+            Cancelar
+          </ion-button>
 
-      <ion-item>
-        <ion-label position="floating">Tipo Rol</ion-label>
-        <ion-input type="text"  formControlName="tipo"></ion-input>
-        <ion-note
-        slot="error"
-          *ngIf="campo('tipo').invalid  && campo('tipo').errors && campo('tipo').errors.required && fueTocado('tipo') "
-        >
-          Este campo es requerido
-        </ion-note>
-        <ion-note
-        slot="error"
-          *ngIf="campo('tipo').invalid  && campo('tipo').errors && campo('tipo').errors.maxlength && fueTocado('tipo') "
-        >
-          Los caracteres maximos son 30
-        </ion-note>
-        <ion-note
-        slot="error"
-          *ngIf="campo('tipo').invalid  && campo('tipo').errors && campo('tipo').errors.minlength && fueTocado('tipo') "
-        >
-          Los caracteres minimos son 3
-        </ion-note>
-      </ion-item>
-
-      <ion-item>
-        <ion-button
-          [disabled]="formulario.invalid "
-        role="submit" type="submit">
-          Guardar
-        </ion-button>
-      </ion-item>
-    </form>
-  </ion-card>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
-<ion-footer>
-  <ion-toolbar >
+
+<ion-footer class="mu-footer">
+  <ion-toolbar>
     <ion-buttons slot="end">
-      <ion-button [routerLink]="['/roles']">Volver</ion-button>
+      <ion-button [routerLink]="['/roles']">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Volver
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

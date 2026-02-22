@@ -1,0 +1,127 @@
+/* Fondo general */
+.mu-content {
+  --background: #0b1220;
+}
+
+/* Header pro */
+.mu-header {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.mu-topbar {
+  --background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 45%, #0f172a 100%);
+  --color: #ffffff;
+}
+
+.mu-topbar ion-title {
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+.mu-back {
+  --color: #fff;
+}
+
+/* Wrapper centrado */
+.mu-wrap {
+  padding: 16px 12px 26px;
+  display: flex;
+  justify-content: center;
+}
+
+.mu-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.mu-card-header {
+  padding: 16px 16px 10px;
+}
+
+.mu-title {
+  color: #fff;
+  font-weight: 900;
+  font-size: 18px;
+  margin: 0;
+}
+
+.mu-subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* Items/Inputs */
+.mu-item {
+  --background: transparent;
+  border-radius: 14px;
+  margin-top: 12px;
+  padding: 10px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mu-label {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.mu-input {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Errores tipo pill */
+.mu-errors {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.mu-error {
+  display: inline-block;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+/* Botones */
+.mu-save {
+  margin-top: 16px;
+  --border-radius: 14px;
+  height: 46px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  --background: #22c55e;
+  --background-hover: #16a34a;
+  --background-activated: #16a34a;
+  --color: #0b1220;
+}
+
+.mu-save[disabled] {
+  opacity: 0.55;
+}
+
+.mu-cancel {
+  margin-top: 6px;
+  --color: rgba(255, 255, 255, 0.8);
+  font-weight: 900;
+}
+
+/* Footer */
+.mu-footer ion-toolbar {
+  --background: rgba(15, 23, 42, 0.92);
+  --color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}

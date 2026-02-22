@@ -1,103 +1,193 @@
-<ion-header>
-  <style>
-    .btn-1  {
-      border:0px;
-  padding: 0px;
-  margin-left: -5px;
-  margin-top:0px;
-    }
-    .btn-2 {
-  border:0px;
-  padding: 0px;
-  margin-left: 110px;
-  margin-top:-70px;
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="volver()">
+        <ion-icon slot="start" name="chevron-back"></ion-icon>
+        Volver
+      </ion-button>
+    </ion-buttons>
 
+    <ion-title>Medio de pago</ion-title>
 
-  }
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="medium" (click)="cancelar()">
+        Cancelar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content fullscreen="true" class="content">
+  <div class="page">
 
-  </style>
-    <ion-toolbar>
-    <h6 style ="margin-left: 10px;">Medio de pago </h6>
+    <!-- Resumen -->
+    <ion-card class="summary">
+      <ion-card-content class="summary-row">
+        <div>
+          <div class="k">Usuario</div>
+          <div class="v">{{ nombreUsuario }}</div>
+        </div>
 
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-
-    </ng-template>
-  </ion-modal>
-    </ion-toolbar>
-  </ion-header>
-
-
-  <ion-content>
-
-    <h6 style ="margin-left: 10px;">Usuario : {{nombreUsuario}} </h6>
-
-  <br>
-    <h4 style ="margin-left: 33px;">Informacion Adicional</h4>
-    <ion-list>
-      <ion-radio-group [allowEmptySelection]="true" value="turtles">
-
-      <ion-card>
-        <ion-card-content>
-          <form>
-
-
-
-      <ion-item>
-        <ion-label position="floating">Nombre</ion-label>
-        <ion-input type="text"  placeholder="Ingrese su Nombre"></ion-input>
-
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Correo Electonico</ion-label>
-        <ion-input type="text" placeholder="Ingrese Correo Electronico"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label>Hogar</ion-label>
-        <ion-select [interfaceOptions] interface="alert" placeholder="Seleccione nivel">
-          <ion-select-option value="Departamento">Departamento</ion-select-option>
-          <ion-select-option value="Casa">Casa</ion-select-option>
-          <ion-select-option value="Cite">Cite</ion-select-option>
-        </ion-select>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Direccion</ion-label>
-        <ion-input type="text" placeholder="Ingrese Direccion"></ion-input>
-      </ion-item>
-
-
-        <ion-label >Medio de pago</ion-label>
-        <ion-item>
-          <ion-label>Tarjeta Debido</ion-label>
-          <ion-radio slot="end" value="dogs"></ion-radio>
-        </ion-item>
-
-        <ion-item>
-          <ion-label>Tarjeta Credito</ion-label>
-          <ion-radio slot="end" value="cats"></ion-radio>
-        </ion-item>
-
-
-      <br>
-      <h6 style ="margin-left: 10px;">Total : {{totalCarrito}} </h6>
-
-
-    </form>
-    </ion-card-content>
+        <div class="right">
+          <div class="k">Total</div>
+          <div class="v total">{{ totalCarrito }}</div>
+        </div>
+      </ion-card-content>
     </ion-card>
-  </ion-radio-group>
-    </ion-list>
-    <ion-button expand="full"    (click)="checkout()">
-      Confirmar Compra
-    </ion-button>
-  </ion-content>
 
-  <ion-footer>
+    <!-- ✅ Detalle de compra (mini carrusel) -->
+    <ion-card class="card cart-preview" *ngIf="carrito?.length">
+      <ion-card-header>
+        <ion-card-title>Tu compra</ion-card-title>
+        <ion-card-subtitle>{{ carrito.length }} producto(s)</ion-card-subtitle>
+      </ion-card-header>
 
+      <ion-card-content>
+        <div class="cart-strip" role="list">
+          <button
+            type="button"
+            class="cart-item"
+            role="listitem"
+            *ngFor="let p of carrito"
+            (click)="verProducto(p)"
+            aria-label="Ver detalle del producto"
+          >
+            <div class="thumb">
+              <img
+                *ngIf="p.imagen; else noimg"
+                [src]="p.imagen"
+                [alt]="p.nombre"
+                loading="lazy"
+              />
+              <ng-template #noimg>
+                <div class="noimg">
+                  <ion-icon name="cube-outline"></ion-icon>
+                </div>
+              </ng-template>
+            </div>
 
+            <div class="meta">
+              <div class="name">{{ p.nombre }}</div>
+              <div class="sub">
+                <span class="qty">x{{ p.cantidad }}</span>
+                <span class="dot">•</span>
+                <span class="price">{{ formatearPrecio(p.precio) }}</span>
+              </div>
+            </div>
 
-  </ion-footer>
+            <div class="line-total">
+              {{ formatearPrecio(p.precio * p.cantidad) }}
+            </div>
+          </button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Datos -->
+    <ion-card class="card">
+      <ion-card-header>
+        <ion-card-title>Información adicional</ion-card-title>
+        <ion-card-subtitle>Para boleta / entrega</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list lines="full" class="form-list">
+          <ion-item>
+            <ion-label position="stacked">Nombre</ion-label>
+            <ion-input [(ngModel)]="nombre" placeholder="Ingrese su nombre"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Correo electrónico</ion-label>
+            <ion-input
+              [(ngModel)]="correo"
+              type="email"
+              inputmode="email"
+              placeholder="Ingrese su correo"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Hogar</ion-label>
+            <ion-select [(ngModel)]="hogar" placeholder="Seleccione una opción">
+              <ion-select-option value="Departamento">Departamento</ion-select-option>
+              <ion-select-option value="Casa">Casa</ion-select-option>
+              <ion-select-option value="Cite">Cité</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Dirección</ion-label>
+            <ion-input [(ngModel)]="direccion" placeholder="Ingrese su dirección"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Medio de pago -->
+    <ion-card class="card">
+      <ion-card-header>
+        <ion-card-title>Medio de pago</ion-card-title>
+        <ion-card-subtitle>Selecciona una opción</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="pay-grid">
+          <button
+            type="button"
+            class="pay-card"
+            [class.active]="metodoPago==='debito'"
+            (click)="metodoPago='debito'">
+            <div class="title">Tarjeta Débito</div>
+            <div class="sub">Pago inmediato (pasarela)</div>
+            <ion-icon class="check" name="checkmark-circle"></ion-icon>
+          </button>
+
+          <button
+            type="button"
+            class="pay-card"
+            [class.active]="metodoPago==='credito'"
+            (click)="metodoPago='credito'">
+            <div class="title">Tarjeta Crédito</div>
+            <div class="sub">Cuotas / pago con tarjeta (pasarela)</div>
+            <ion-icon class="check" name="checkmark-circle"></ion-icon>
+          </button>
+
+          <button
+            type="button"
+            class="pay-card"
+            [class.active]="metodoPago==='transferencia'"
+            (click)="metodoPago='transferencia'">
+            <div class="title">Transferencia</div>
+            <div class="sub">Datos bancarios (demo)</div>
+            <ion-icon class="check" name="checkmark-circle"></ion-icon>
+          </button>
+        </div>
+
+        <div class="transfer-box" *ngIf="metodoPago === 'transferencia'">
+          <div class="transfer-title">Datos para transferencia</div>
+          <div class="transfer-row"><span>Banco:</span> <b>Banco Demo</b></div>
+          <div class="transfer-row"><span>Cuenta:</span> <b>12345678</b></div>
+          <div class="transfer-row"><span>RUT:</span> <b>11.111.111-1</b></div>
+          <div class="transfer-row"><span>Correo:</span> <b>pagos@demo.cl</b></div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="bottom-spacer"></div>
+  </div>
+</ion-content>
+
+<!-- Footer fijo -->
+<ion-footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="k">Total</div>
+      <div class="v total">{{ totalCarrito }}</div>
+    </div>
+
+    <div class="footer-actions">
+      <ion-button class="cta" (click)="checkout()">Confirmar</ion-button>
+    </div>
+  </div>
+</ion-footer>

@@ -1,0 +1,133 @@
+.login-content {
+  --background: transparent;
+}
+
+.login-shell {
+  min-height: 100%;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+
+  /* Fondo pro */
+  background:
+    radial-gradient(1200px 600px at 10% 0%, rgba(255, 70, 70, 0.22), transparent 55%),
+    radial-gradient(900px 500px at 100% 10%, rgba(0, 180, 255, 0.18), transparent 55%),
+    radial-gradient(700px 500px at 50% 100%, rgba(60, 255, 120, 0.14), transparent 60%),
+    linear-gradient(180deg, #0b0f1a 0%, #070a12 100%);
+}
+
+.login-card {
+  width: min(520px, 100%);
+  border-radius: 22px;
+  overflow: hidden;
+  margin: 0;
+
+  /* Glass look */
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.login-card-header {
+  padding: 18px 18px 8px 18px;
+}
+
+.brand {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.brand-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.field {
+  margin-top: 14px;
+  border-radius: 14px;
+  --background: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(255, 255, 255, 0.10);
+  --highlight-color-focused: rgba(255, 80, 80, 0.9);
+}
+
+.field-icon {
+  opacity: 0.9;
+}
+
+.eye-btn {
+  --padding-start: 6px;
+  --padding-end: 6px;
+}
+
+.errors {
+  padding: 8px 4px 0 8px;
+  display: grid;
+  gap: 6px;
+
+  ion-text {
+    font-size: 12px;
+    opacity: 0.95;
+  }
+}
+
+.primary-btn {
+  margin-top: 18px;
+  --border-radius: 14px;
+  height: 46px;
+  font-weight: 800;
+
+  /* tono pro */
+  --background: linear-gradient(135deg, #ff3b3b 0%, #ff6a3b 100%);
+  --box-shadow: 0 14px 30px rgba(255, 70, 70, 0.25);
+}
+
+.secondary-btn {
+  margin-top: 10px;
+  --border-radius: 14px;
+  height: 46px;
+  font-weight: 700;
+  --border-color: rgba(255, 255, 255, 0.22);
+}
+
+.helper {
+  margin-top: 14px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.login-header ion-toolbar {
+  --background: rgba(0, 0, 0, 0.35);
+  --border-color: transparent;
+}
+
+.login-footer ion-toolbar {
+  --background: rgba(0, 0, 0, 0.35);
+  --border-color: transparent;
+}
+
+/* mejora de tap targets mobile */
+ion-item::part(native) {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

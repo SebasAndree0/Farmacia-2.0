@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+
+  // ✅ URL del BACKEND (API), NO del frontend
+  // Angular corre en http://localhost:4200
+  // Tu API debería correr en otro puerto, por ejemplo 3001
+  apiUrl: 'http://localhost:3001',
 };
 
 /*

@@ -1,58 +1,91 @@
-<ion-header>
-  <ion-toolbar >
-    <ion-title>Medicamentos</ion-title>
-
-
-    <ion-toolbar >
-      <ion-searchbar color="warning" placeholder = "Buscar nombre o marca o categoria" [debounce]="1000" animated (ionChange)="handleChange($event)"></ion-searchbar>
-    </ion-toolbar>
-  </ion-toolbar>
-
-</ion-header>
-<ion-content>
-
-
+<ion-content class="app-bg" [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ion-list>
-    <ion-card *ngFor="let detalles of resultados">
-      <ion-img [src]="detalles.imagen"></ion-img>
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-            {{detalles.nombre}} {{detalles.marca}}
-          </h1></ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <h3 id = "card">{{detalles.categoria}}</h3>
-      <h3 id = "card"> {{detalles.precio | currency:'CLP'  }} </h3>
 
-      </ion-card-content>
-      <ion-button  [routerLink]="['/detalle-producto',detalles.id]" color="success" >
-        <ion-icon name="reorder-four-outline"></ion-icon>
-      </ion-button>
+  <div class="page">
+    <!-- HERO -->
+    <div class="hero">
+      <div class="toprow">
+        <div>
+          <h1>Medicamentos</h1>
+          <p>Busca por nombre o marca. Stock y precios al día.</p>
+        </div>
 
+        <ion-button fill="clear" class="back-btn" [routerLink]="['/producto']">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </ion-button>
+      </div>
 
-    </ion-card>
-  </ion-list>
+      <ion-searchbar
+        mode="ios"
+        placeholder="Buscar medicamento o marca"
+        [debounce]="250"
+        animated
+        (ionChange)="handleChange($event)">
+      </ion-searchbar>
+
+      <div class="hint-row">
+        <span class="pill"><span class="dot"></span> Medicamentos</span>
+        <span class="pill"><span class="dot"></span> Con / sin receta</span>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty" *ngIf="resultados?.length === 0">
+      <div class="empty-card">
+        <div class="empty-icon">🔎</div>
+        <div class="empty-title">No encontramos resultados</div>
+        <div class="empty-sub">Prueba con otro nombre o marca.</div>
+      </div>
+    </div>
+
+    <!-- GRID DE PRODUCTOS -->
+    <div class="grid" *ngIf="resultados?.length">
+      <button
+        class="p-card"
+        *ngFor="let detalles of resultados"
+        [routerLink]="['/detalle-producto', detalles.id]"
+      >
+        <div class="img-wrap">
+          <img [src]="detalles.imagen" alt="" />
+          <div class="badge">{{ detalles.categoria }}</div>
+        </div>
+
+        <div class="body">
+          <div class="name">{{ detalles.nombre }} {{ detalles.marca }}</div>
+
+          <div class="price">
+            {{ detalles.precio | currency:'CLP' }}
+          </div>
+
+          <div class="actions">
+            <span class="cta">
+              Ver detalle
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
 </ion-content>
+
 <ion-footer>
   <ion-toolbar>
     <ion-tabs>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button [routerLink]="['/producto']" >
+        <ion-tab-button [routerLink]="['/producto']">
           <ion-icon name="arrow-undo-outline"></ion-icon>
           <ion-label>Volver</ion-label>
-
         </ion-tab-button>
 
-        <ion-tab-button [routerLink]="['/login']" >
+        <ion-tab-button [routerLink]="['/login']">
           <ion-icon name="person-circle" aria-hidden="true"></ion-icon>
           <ion-label>Usuario</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button (click)="openCart()" >
+        <ion-tab-button (click)="openCart()">
           <ion-icon name="cart" class="cart-icon"></ion-icon>
           <ion-label>Carrito</ion-label>
         </ion-tab-button>

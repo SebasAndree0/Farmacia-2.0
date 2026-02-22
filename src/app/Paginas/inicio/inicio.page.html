@@ -1,85 +1,265 @@
-<ion-header>
+<ion-header class="glass-header">
   <ion-toolbar>
-    <ion-title>Menu Principal</ion-title>
-    <ion-icon name="log-out-outline" class="ion-icon" (click)="salir()" slot="end"></ion-icon>
+    <ion-title>Inicio</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" class="logout-btn" (click)="salir()">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
-
-
 </ion-header>
 
-<ion-content>
+<ion-content class="app-bg" [fullscreen]="true">
+  <div class="page">
 
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-copy">
+          <h1>Tu farmacia online</h1>
+          <p>Encuentra medicamentos, perfumes y cremas. Compra rápida y segura.</p>
 
+          <div class="hero-badges">
+            <span class="pill"><span class="dot"></span> Delivery en 24 horas</span>
+            <span class="pill pill-muted">
+              <ion-icon name="lock-closed-outline"></ion-icon> Pago seguro
+            </span>
+            <span class="pill pill-muted">
+              <ion-icon name="storefront-outline"></ion-icon> Retiro
+            </span>
+          </div>
+        </div>
 
-
-
-
-
-
-  <ion-slides>
-    <ion-slide>
-      <div class="slide">
-        <img src="https://d1tjllbjmslitt.cloudfront.net/spree/products/86001/large_webp/1768333.webp?1671802354" />
-        <h2>Ibuprofeno </h2>
-        <p>
-          Ibuprofeno 600 mg x 20 Comprimidos <br>Principio Activo: Ibuprofeno Forma Farmacéutica: Oral
-        </p>
+        <div class="hero-mini">
+          <div class="mini-card">
+            <div class="mini-top">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+              <span>Compra segura</span>
+            </div>
+            <div class="mini-sub">Pago protegido y soporte.</div>
+          </div>
+        </div>
       </div>
-    </ion-slide>
 
+      <!-- Searchbar -->
+      <div class="search-wrap">
+        <ion-searchbar
+          mode="ios"
+          placeholder="Buscar producto, marca o categoría"
+          [debounce]="250"
+          (ionInput)="handleChange($event)"
+          [value]="searchText"
+          animated>
+        </ion-searchbar>
 
+        <button class="clear-search" *ngIf="searchText" (click)="limpiarBusqueda()">
+          Limpiar
+        </button>
+      </div>
 
+      <!-- Accesos rápidos -->
+      <div class="quick-actions">
+        <button class="q-btn" [routerLink]="['/medicamentos']">
+          <span class="q-ico"><ion-icon name="medical-outline"></ion-icon></span>
+          <span class="q-txt">
+            <span class="q-title">Medicamentos</span>
+            <span class="q-sub">Con receta / sin receta</span>
+          </span>
+          <ion-icon class="q-arrow" name="chevron-forward-outline"></ion-icon>
+        </button>
 
+        <button class="q-btn" [routerLink]="['/cremas']">
+          <span class="q-ico"><ion-icon name="water-outline"></ion-icon></span>
+          <span class="q-txt">
+            <span class="q-title">Cremas</span>
+            <span class="q-sub">Cuidado de piel</span>
+          </span>
+          <ion-icon class="q-arrow" name="chevron-forward-outline"></ion-icon>
+        </button>
 
+        <button class="q-btn" [routerLink]="['/perfumes']">
+          <span class="q-ico"><ion-icon name="sparkles-outline"></ion-icon></span>
+          <span class="q-txt">
+            <span class="q-title">Perfumes</span>
+            <span class="q-sub">Hombre / Mujer</span>
+          </span>
+          <ion-icon class="q-arrow" name="chevron-forward-outline"></ion-icon>
+        </button>
+      </div>
+    </section>
 
+    <!-- RESULTADOS (cuando hay búsqueda) -->
+    <section class="section" *ngIf="mostrandoResultados">
+      <div class="section-head row-between">
+        <div>
+          <div class="title">Resultados</div>
+          <div class="sub">
+            Se encontraron {{ resultados?.length || 0 }} productos para: <b>{{ searchText }}</b>
+          </div>
+        </div>
 
+        <ion-button fill="clear" size="small" class="see-all" (click)="limpiarBusqueda()">
+          Volver
+          <ion-icon name="chevron-back-outline" slot="end"></ion-icon>
+        </ion-button>
+      </div>
 
-    <ion-slide>
-      <img src="https://d1tjllbjmslitt.cloudfront.net/spree/products/83862/large_webp/2202026.webp?1668457177" />
-      <h2>Ketoprofeno</h2>
-      <p>
-        Ketoprofeno 50mg x 20 Cápsulas <br> Principio Activo: Ketoprofeno Forma Farmacéutica: Cápsulas
-      </p>
-    </ion-slide>
+      <div class="grid">
+        <article class="p-card" *ngFor="let p of resultados; trackBy: trackByProd">
+          <div class="p-media">
+            <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+            <span class="p-chip">{{ p.categoria || 'Producto' }}</span>
+          </div>
 
-    <ion-slide>
-      <img src="https://d1tjllbjmslitt.cloudfront.net/spree/products/80170/large_webp/2835313.webp?1663806904" />
-      <h2> Hiperflex</h2>
-      <p>
-        Hiperflex 4.7 Grs. 35 Sobres <br> Principio Activo: Condroitina <br> Forma Farmaceutica: Polvo Solución Oral
-      </p>
-    </ion-slide>
+          <div class="p-body">
+            <div class="p-name">{{ p.nombre }}</div>
+            <div class="p-meta">{{ p.marca }}</div>
 
-    <ion-slide>
-      <img
-        src="https://d1tjllbjmslitt.cloudfront.net/spree/products/83918/large_webp/ECommerce-Doraliv.webp?1668538829" />
-      <h2>NOTTS</h2>
-      <p>
-        Doraliv Ibuprofeno 600 mg x 10 Cápsulas <br>Principio Activo: Ibuprofeno Forma Farmacéutica: Oral
-      </p>
-    </ion-slide>
-  </ion-slides>
+            <div class="p-price" *ngIf="p.precio">
+              $ {{ p.precio | number:'1.0-0' }}
+            </div>
 
+            <div class="p-actions">
+              <button class="ghost" type="button" (click)="verProducto(p)">
+                Ver
+              </button>
+              <button class="solid" type="button" (click)="agregarAlCarrito(p)">
+                Agregar
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
 
+      <div class="empty" *ngIf="(resultados?.length || 0) === 0">
+        <ion-icon name="search-outline"></ion-icon>
+        <div class="empty-title">Sin resultados</div>
+        <div class="empty-sub">Prueba con otro nombre, marca o categoría.</div>
+      </div>
+    </section>
 
+    <!-- HOME (cuando NO hay búsqueda) -->
+    <ng-container *ngIf="!mostrandoResultados">
+
+      <!-- DESTACADOS -->
+      <section class="section">
+        <div class="section-head row-between">
+          <div>
+            <div class="title">Destacados</div>
+            <div class="sub">Pocos, buenos y recomendados</div>
+          </div>
+
+          <ion-button fill="clear" size="small" class="see-all" [routerLink]="['/producto']">
+            Ver todo
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+        <ion-slides class="pro-slides" pager="true">
+          <ion-slide *ngFor="let f of destacados; trackBy: trackByProd">
+            <article class="slide-card">
+              <div class="slide-media">
+                <img [src]="f.imagen" [alt]="f.nombre" loading="lazy" />
+                <span class="badge">{{ f.categoria || 'Producto' }}</span>
+              </div>
+
+              <div class="slide-body">
+                <div class="slide-title">{{ f.nombre }}</div>
+
+                <div class="slide-desc">
+                  <span *ngIf="f.marca">{{ f.marca }}</span>
+                  <span *ngIf="f.marca && f.precio"> · </span>
+                  <span *ngIf="f.precio">CLP {{ f.precio | number:'1.0-0' }}</span>
+                </div>
+
+                <div class="slide-actions">
+                  <ion-button size="small" class="btn-mini" (click)="verProducto(f)">
+                    Ver
+                    <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                  </ion-button>
+
+                  <ion-button size="small" class="btn-mini" (click)="agregarAlCarrito(f)">
+                    Agregar
+                    <ion-icon name="add-outline" slot="end"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </article>
+          </ion-slide>
+        </ion-slides>
+      </section>
+
+      <!-- PARA TI -->
+      <section class="section">
+        <div class="section-head row-between">
+          <div>
+            <div class="title">Para ti</div>
+            <div class="sub">Vitrina pequeña para no saturar.</div>
+          </div>
+
+          <ion-button fill="clear" size="small" class="see-all" [routerLink]="['/producto']">
+            Ver más
+            <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+
+        <div class="grid grid-compact">
+          <article class="p-card" *ngFor="let p of vitrina; trackBy: trackByProd">
+            <div class="p-media">
+              <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+              <span class="p-chip">{{ p.categoria || 'Producto' }}</span>
+            </div>
+
+            <div class="p-body">
+              <div class="p-name">{{ p.nombre }}</div>
+              <div class="p-meta">{{ p.marca }}</div>
+
+              <div class="p-price" *ngIf="p.precio">
+                $ {{ p.precio | number:'1.0-0' }}
+              </div>
+
+              <div class="p-actions">
+                <button class="ghost" type="button" (click)="verProducto(p)">
+                  Ver
+                </button>
+                <button class="solid" type="button" (click)="agregarAlCarrito(p)">
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="cta-more">
+          <ion-button expand="block" class="cta-btn" [routerLink]="['/producto']">
+            Explorar catálogo completo
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          </ion-button>
+        </div>
+      </section>
+
+    </ng-container>
+
+    <div class="bottom-space"></div>
+  </div>
 </ion-content>
 
-<ion-footer>
+<ion-footer class="glass-footer">
   <ion-toolbar>
     <ion-tabs>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button [routerLink]="['/producto']" >
+        <ion-tab-button [routerLink]="['/producto']">
           <ion-icon name="bag-handle-outline"></ion-icon>
           <ion-label>Productos</ion-label>
-
         </ion-tab-button>
 
-        <ion-tab-button [routerLink]="['/login']"  >
+        <ion-tab-button [routerLink]="['/login']">
           <ion-icon name="person-circle" aria-hidden="true"></ion-icon>
           <ion-label>Usuario</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button (click)="openCart()" >
+        <ion-tab-button (click)="openCart()">
           <ion-icon name="cart" class="cart-icon"></ion-icon>
           <ion-label>Carrito</ion-label>
         </ion-tab-button>

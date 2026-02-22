@@ -1,119 +1,126 @@
-<ion-header>
+<ion-header class="cart-header">
   <ion-toolbar>
-    <ion-title>Carrito</ion-title>
+    <div class="hdr">
+      <ion-title>Carrito</ion-title>
+
+      <ion-buttons slot="end">
+        <ion-button class="close-btn" fill="clear" (click)="close()" aria-label="Cerrar">
+          <ion-icon name="close" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
   </ion-toolbar>
-
-  <style>
-    .btn-1  {
-    border:0px;
-  padding: 0px;
-  margin-left: 75px;
-  margin-top:0px;
-    }
-    .btn-2 {
-  border:0px;
-  padding: 0px;
-  margin-left: 30px;
-  margin-top:0px;
-  }
-
-
-  .btn-3  {
-  border:0px;
-  padding: 0px;
-  margin-left: 90px;
-  margin-top:0px;
-    }
-
-</style>
-
-
-
 </ion-header>
 
-<ion-content>
+<ion-content class="cart-content" [fullscreen]="true">
+  <div class="cart-wrap" [class.has-footer]="cart?.length">
 
-  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+    <!-- Vacío -->
+    <section class="empty" *ngIf="!cart?.length">
+      <div class="empty-card">
+        <div class="empty-ico">
+          <ion-icon name="cart-outline"></ion-icon>
+        </div>
 
+        <h3>Tu carrito está vacío</h3>
+        <p>Agrega productos para continuar.</p>
 
-  <div class="ion-text-end">
-    <ion-button (click)="close()" fill="clear" color="dark">
-      <ion-icon name="close" slot="start"></ion-icon>
-    </ion-button>
+        <ion-button expand="block" fill="outline" (click)="close()">
+          Seguir comprando
+        </ion-button>
+      </div>
+    </section>
+
+    <!-- Lista -->
+    <section class="cart-list" *ngIf="cart?.length">
+      <div class="cart-item" *ngFor="let item of cart; trackBy: trackByCarrito">
+        <div class="thumb">
+          <img [src]="item?.imagen" [alt]="item?.nombre" loading="lazy" />
+        </div>
+
+        <div class="info">
+          <div class="top">
+            <div class="name" title="{{ item?.nombre }}">{{ item?.nombre }}</div>
+
+            <div class="price">
+              CLP{{ ((item?.precio ?? 0) * (item?.cantidad ?? 0)) | number:'1.0-0' }}
+            </div>
+          </div>
+
+          <div class="meta">
+            <span class="unit">
+              Unit: CLP{{ (item?.precio ?? 0) | number:'1.0-0' }}
+            </span>
+          </div>
+
+          <div class="bottom">
+            <div class="qty" role="group" aria-label="Cantidad">
+              <button type="button" class="qty-btn" (click)="disminuirProd(item)" aria-label="Disminuir">
+                <ion-icon name="remove" aria-hidden="true"></ion-icon>
+              </button>
+
+              <div class="qty-val">{{ item?.cantidad ?? 0 }}</div>
+
+              <button type="button" class="qty-btn" (click)="incrementarProd(item)" aria-label="Aumentar">
+                <ion-icon name="add" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+
+            <button type="button" class="remove" (click)="removeCartItem(item)" aria-label="Eliminar producto">
+              <ion-icon name="trash-outline"></ion-icon>
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
+</ion-content>
 
-  <form [formGroup]="formulario">
-    <ion-card *ngFor="let p of cart" >
-      <ion-header><ion-img [src]="p.imagen"></ion-img></ion-header>
+<!-- ✅ Footer fijo -->
+<ion-footer *ngIf="cart?.length" class="cart-footer">
+  <div class="summary">
+    <div class="summary-head">
+      <div class="mini">
+        <div class="dot"></div>
+        <span>Resumen</span>
+      </div>
+      <span class="items">{{ cart?.length }} ítem(s)</span>
+    </div>
 
-      <ion-list>
+    <div class="row">
+      <span>Subtotal</span>
+      <strong>CLP{{ getTotal() | number:'1.0-0' }}</strong>
+    </div>
 
-  <ion-item>
+    <div class="row muted">
+      <span>Envío</span>
+      <strong>Por calcular</strong>
+    </div>
 
+    <div class="divider"></div>
 
+    <div class="row total">
+      <span>Total</span>
+      <strong>CLP{{ getTotal() | number:'1.0-0' }}</strong>
+    </div>
 
-          <ion-button  color="medium" fill="clear" (click)="disminuirProd(p)" style="height:auto; width:auto">
-            <ion-icon name="remove-circle" slot="icon-only"></ion-icon>
-          </ion-button>
+    <div class="actions">
+      <ion-button expand="block" class="buy-btn" (click)="comprar()">
+        COMPRAR
+      </ion-button>
 
-        <ion-col size-sm="1" class="ion-align-self-center">
-          {{ p.cantidad }}
-        </ion-col>
+      <div class="secondary">
+        <ion-button size="small" fill="outline" class="clear-btn" (click)="borrarTodo()">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Borrar todo
+        </ion-button>
 
-
-          <ion-button color="medium" fill="clear" (click)="incrementarProd(p)" style="margin-right:100px;">
-            <ion-icon name="add-circle" slot="icon-only"></ion-icon>
-          </ion-button>
-          <ion-button  class="ion-align-self-cente" color="black" fill="clear" (click)="removeCartItem(p)" style="height:auto; width:auto" style="margin-left: -75px;">
-            Eliminar
-          </ion-button>
-
-
-
-  </ion-item>
-
-  <ion-segment value="default">
-    <ion-segment-button value="default" (click)="stockProductoQuitar(p)">
-      <ion-label>Confirmar</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="segment" (click)="stockProductoAgregar(p)">
-      <ion-label>Cancelar</ion-label>
-    </ion-segment-button>
-  </ion-segment>
-
-
-
-
-    <ion-label color="dark"> {{p.nombre}}</ion-label>
-    <ion-label color="dark" style="margin-left: 68px;">{{p.cantidad* p.precio | currency:'CLP'}}</ion-label>
-
-</ion-list>
-</ion-card>
-  </form>
-
-
-  <ion-button expand="full"  (click)="openCart()">
-    Comprar
-  </ion-button>
-
-
-  <ion-item>
-    <ion-grid>
-      <ion-row>
-        <ion-col size="9">
-          Total:
-        </ion-col>
-        <ion-col size="9" class="ion-text-end">
-       {{getTotal() |currency:'CLP'}}
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-
-  </ion-item>
-
-
-  </ion-content>
-
+        <button class="keep" type="button" (click)="close()">
+          Seguir comprando
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-footer>

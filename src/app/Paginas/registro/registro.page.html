@@ -1,69 +1,105 @@
-<ion-header>
+<ion-header class="auth-header" translucent="true">
   <ion-toolbar>
-    <ion-title>Registro</ion-title>
+    <ion-title>Crear cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
-  <form [formGroup]="formulario2" novalidate (ngSubmit)="guardarCliente()" >
-    <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
-      <ion-input type="text" formControlName="nombre"></ion-input>
-      <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.required && fueTocado('nombre') "
-      >
-        Este campo es requerido
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.maxlength && fueTocado('nombre') "
-      >
-        Los caracteres maximos son 10
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('nombre').invalid  && campo('nombre').errors && campo('nombre').errors.minlength && fueTocado('nombre') "
-      >
-        Los caracteres minimos son 3
-      </ion-note>
-    </ion-item>
+<ion-content [fullscreen]="true" class="auth-content">
+  <div class="auth-shell">
+    <ion-card class="auth-card">
+      <ion-card-header class="auth-card-header">
+        <div class="brand">
+          <div class="brand-badge">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
 
+          <div class="brand-text">
+            <ion-card-title class="brand-title">Registro</ion-card-title>
+            <ion-card-subtitle class="brand-subtitle">Crea tu cuenta de cliente</ion-card-subtitle>
+          </div>
+        </div>
+      </ion-card-header>
 
-    <ion-item>
-      <ion-label position="floating">Contraseña</ion-label>
-      <ion-input type="password" formControlName="contraseña"></ion-input>
-      <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.required && fueTocado('contraseña') "
-      >
-        Este campo es requerido
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.maxlength && fueTocado('contraseña') "
-      >
-        Los caracteres maximos son 10
-      </ion-note>
-      <ion-note
-      slot="error"
-        *ngIf="campo('contraseña').invalid  && campo('contraseña').errors && campo('contraseña').errors.minlength && fueTocado('contraseña') "
-      >
-        Los caracteres minimos son 3
-      </ion-note>
-    </ion-item>
+      <ion-card-content>
+        <form [formGroup]="formulario2" (ngSubmit)="guardarCliente()">
+          <!-- Nombre -->
+          <ion-item class="field" lines="inset">
+            <ion-icon name="person-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Nombre</ion-label>
+            <ion-input
+              type="text"
+              formControlName="nombre"
+              autocomplete="name"
+              enterkeyhint="next"
+            ></ion-input>
+          </ion-item>
 
+          <div class="errors" *ngIf="showErrors('nombre')">
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['required']">• Este campo es requerido</ion-text>
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['minlength']">• Mínimo 3 caracteres</ion-text>
+            <ion-text color="danger" *ngIf="campo('nombre')?.errors?.['maxlength']">• Máximo 10 caracteres</ion-text>
+          </div>
 
-    <ion-item>
-      <ion-button
-        [disabled]="formulario2.invalid"
+          <!-- Contraseña -->
+          <ion-item class="field" lines="inset">
+            <ion-icon name="lock-closed-outline" slot="start" class="field-icon"></ion-icon>
+            <ion-label position="floating">Contraseña</ion-label>
 
-      role="submit" type="submit" >
-        Guardar
-      </ion-button>
-      <ion-button [routerLink]="['/login']">Volver</ion-button>
-    </ion-item>
-  </form>
-</ion-card>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="contraseña"
+              autocomplete="new-password"
+              enterkeyhint="done"
+            ></ion-input>
+
+            <ion-button
+              fill="clear"
+              size="small"
+              class="eye-btn"
+              type="button"
+              slot="end"
+              (click)="togglePassword()"
+              aria-label="Mostrar u ocultar contraseña"
+            >
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </ion-button>
+          </ion-item>
+
+          <div class="errors" *ngIf="showErrors('contraseña')">
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['required']">• Este campo es requerido</ion-text>
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['minlength']">• Mínimo 3 caracteres</ion-text>
+            <ion-text color="danger" *ngIf="campo('contraseña')?.errors?.['maxlength']">• Máximo 10 caracteres</ion-text>
+          </div>
+
+          <!-- tipo fijo -->
+          <ion-input formControlName="tipo" type="hidden"></ion-input>
+
+          <ion-button
+            expand="block"
+            class="primary-btn"
+            type="submit"
+            [disabled]="formulario2.invalid || isLoading"
+          >
+            <ion-spinner *ngIf="isLoading" name="crescent" slot="start"></ion-spinner>
+            <span>{{ isLoading ? 'Guardando...' : 'Guardar' }}</span>
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="secondary-btn"
+            type="button"
+            [disabled]="isLoading"
+            [routerLink]="['/login']"
+          >
+            Volver
+          </ion-button>
+
+          <div class="helper">
+            <ion-text color="medium">Al crear tu cuenta podrás comprar y ver tu historial.</ion-text>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

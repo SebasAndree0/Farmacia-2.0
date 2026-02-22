@@ -1,89 +1,95 @@
-<ion-header>
+<ion-header class="glass-header">
   <ion-toolbar>
-    <ion-title>Detalle Medicamentos</ion-title>
+    <ion-title>Detalle</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="detail-bg">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-fab vertical="top" horizontal="end" slot="fixed">
-    <ion-fab-button #cartFabBtn (click)="openCart()" #cart>
-      <ion-icon name="cart" class="cart-icon"></ion-icon>
+  <ion-fab vertical="top" horizontal="end" slot="fixed" class="fab-cart">
+    <ion-fab-button (click)="openCart()">
+      <ion-icon name="cart-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <ion-card *ngIf="productoActivo">
-    <ion-img [src]="productoActivo.imagen"></ion-img>
-    <ion-card-header>
-      <ion-card-title>
-        {{ productoActivo.nombre }}
-      </ion-card-title>
-      <ion-card-subtitle>
-        {{productoActivo.precio | currency:'CLP'}}
-      </ion-card-subtitle>
-    </ion-card-header>
-    <ion-list>
-      <ion-item-sliding>
-        <ion-item>
-          <h6>Detalle: {{ productoActivo.detalle }}</h6>
-        </ion-item>
-        <ion-item>
-          <ion-label>Categoria: {{ productoActivo.categoria}}</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>Marca: {{ productoActivo.marca }}</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>Receta: {{ productoActivo.receta }}</ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-label>Stock: {{ productoActivo.stock }}</ion-label>
-        </ion-item>
-      </ion-item-sliding>
-    </ion-list>
-    <ion-grid>
-      <ion-row>
-        <ion-col size="12">
-          <ion-button color="primary"
-            (click)="addToCart (productoActivo.nombre,productoActivo.precio,productoActivo.imagen,productoActivo.cantidad,productoActivo.stock)"
-            #cartBtn (click)="addToCartCarrito()">
-            <ion-icon name="add-outline"></ion-icon>Agregar al carro
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+  <div class="wrap">
+    <div class="loading" *ngIf="!productoActivo">
+      <div class="skeleton-card">
+        <div class="sk-img"></div>
+        <div class="sk-line w70"></div>
+        <div class="sk-line w45"></div>
+        <div class="sk-line w85"></div>
+      </div>
+    </div>
 
-    <ion-card-content style="display: flex; justify-content: space-between;">
-    </ion-card-content>
-  </ion-card>
+    <div *ngIf="productoActivo" class="card">
+      <!-- HERO -->
+      <div class="hero">
+        <img [src]="productoActivo.imagen" alt="" loading="lazy" />
 
-  <ion-footer>
-    <ion-toolbar>
-      <ion-tabs>
-        <ion-tab-bar slot="bottom">
-          <ion-tab-button [routerLink]="['/medicamentos']" >
-            <ion-icon name="arrow-undo-outline"></ion-icon>
-            <ion-label>Volver</ion-label>
+        <div class="meta">
+          <span class="pill">{{ productoActivo.categoria }}</span>
+          <span class="pill soft" *ngIf="productoActivo.marca">{{ productoActivo.marca }}</span>
+        </div>
+      </div>
 
-          </ion-tab-button>
+      <!-- BODY -->
+      <div class="content">
+        <div class="top">
+          <div class="name">{{ productoActivo.nombre }}</div>
+          <div class="price">{{ productoActivo.precio | currency:'CLP' }}</div>
+        </div>
 
-          <ion-tab-button [routerLink]="['/login']" >
-            <ion-icon name="person-circle" aria-hidden="true"></ion-icon>
-            <ion-label>Usuario</ion-label>
-          </ion-tab-button>
+        <div class="desc" *ngIf="productoActivo.detalle">
+          {{ productoActivo.detalle }}
+        </div>
 
+        <div class="chips">
+          <div class="chip" *ngIf="productoActivo.receta !== undefined && productoActivo.receta !== null">
+            <ion-icon name="document-text-outline"></ion-icon>
+            <span>Requiere receta</span>
+          </div>
 
-        </ion-tab-bar>
-      </ion-tabs>
-    </ion-toolbar>
-  </ion-footer>
+          <div class="chip" *ngIf="productoActivo.stock !== undefined && productoActivo.stock !== null">
+            <ion-icon name="cube-outline"></ion-icon>
+            <span>Stock: {{ productoActivo.stock }}</span>
+          </div>
+        </div>
 
+        <ion-button
+          expand="block"
+          size="large"
+          class="btn-primary"
+          (click)="addToCart(productoActivo.nombre, productoActivo.precio, productoActivo.imagen, productoActivo.cantidad, productoActivo.stock)"
+        >
+          <ion-icon name="bag-add-outline" slot="start"></ion-icon>
+          Agregar al carro
+        </ion-button>
 
-
-
-
+        <ion-button expand="block" fill="clear" class="btn-ghost" [routerLink]="['/medicamentos']">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Volver
+        </ion-button>
+      </div>
+    </div>
+  </div>
 </ion-content>
+
+<ion-footer class="glass-footer">
+  <ion-toolbar>
+    <div class="footer-actions">
+      <ion-button fill="clear" class="foot-btn" [routerLink]="['/medicamentos']">
+        <ion-icon name="arrow-undo-outline" slot="start"></ion-icon>
+        Volver
+      </ion-button>
+
+      <ion-button fill="clear" class="foot-btn" [routerLink]="['/login']">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        Usuario
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

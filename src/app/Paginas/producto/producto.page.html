@@ -1,72 +1,104 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Categorias</ion-title>
-
-
-    <ion-toolbar color="primary">
-      <ion-searchbar color="warning" placeholder = "Buscar nombre o marca o categoria" [debounce]="1000" animated (ionChange)="handleChange($event)"></ion-searchbar>
-    </ion-toolbar>
-  </ion-toolbar>
+<ion-header translucent>
 
 </ion-header>
-<ion-content>
 
-
+<ion-content class="app-bg" [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ion-list>
-    <ion-card color="primary" (click)="openMedicamento()" >
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-           medicamentos
-          </h1></ion-card-title>
-      </ion-card-header>
-    </ion-card>
-    <br>
-    <ion-card color="primary" (click)="openCremas()" >
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-           cremas
-          </h1></ion-card-title>
-      </ion-card-header>
 
-    </ion-card>
+  <div class="page">
+    <!-- HERO -->
+    <div class="hero">
+      <h1>Categorías</h1>
+      <p>Encuentra medicamentos, cremas y perfumes.</p>
 
-    <br>
-    <ion-card color="primary" (click)="openPerfumes()" >
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-           perfumes
-          </h1></ion-card-title>
-      </ion-card-header>
+      <ion-searchbar
+        mode="ios"
+        placeholder="Buscar nombre, marca o categoría"
+        [debounce]="250"
+        animated
+        (ionChange)="handleChange($event)">
+      </ion-searchbar>
 
-  </ion-card>
+      <div class="chips">
+        <ion-chip (click)="openMedicamento()">
+          <ion-icon name="medkit-outline"></ion-icon>
+          <ion-label>Medicamentos</ion-label>
+        </ion-chip>
 
+        <ion-chip (click)="openCremas()">
+          <ion-icon name="water-outline"></ion-icon>
+          <ion-label>Cremas</ion-label>
+        </ion-chip>
 
-  </ion-list>
+        <ion-chip (click)="openPerfumes()">
+          <ion-icon name="flower-outline"></ion-icon>
+          <ion-label>Perfumes</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="grid">
+      <button class="cat-card" (click)="openMedicamento()">
+        <div class="icon">
+          <ion-icon name="medkit-outline"></ion-icon>
+        </div>
+        <div class="txt">
+          <div class="title">Medicamentos</div>
+          <div class="sub">Con receta / sin receta</div>
+        </div>
+        <div class="chev">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </button>
+
+      <button class="cat-card" (click)="openCremas()">
+        <div class="icon">
+          <ion-icon name="water-outline"></ion-icon>
+        </div>
+        <div class="txt">
+          <div class="title">Cremas</div>
+          <div class="sub">Cuidado de piel</div>
+        </div>
+        <div class="chev">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </button>
+
+      <button class="cat-card" (click)="openPerfumes()">
+        <div class="icon">
+          <ion-icon name="flower-outline"></ion-icon>
+        </div>
+        <div class="txt">
+          <div class="title">Perfumes</div>
+          <div class="sub">Hombre / mujer</div>
+        </div>
+        <div class="chev">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </button>
+    </div>
+  </div>
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
     <ion-tabs>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button [routerLink]="['/']" >
+        <ion-tab-button [routerLink]="['/']">
           <ion-icon name="arrow-undo-outline"></ion-icon>
           <ion-label>Volver</ion-label>
-
         </ion-tab-button>
 
-        <ion-tab-button [routerLink]="['/login']" >
-          <ion-icon name="person-circle" aria-hidden="true"></ion-icon>
+        <ion-tab-button [routerLink]="['/login']">
+          <ion-icon name="person-circle"></ion-icon>
           <ion-label>Usuario</ion-label>
         </ion-tab-button>
 
-        <ion-tab-button (click)="openCart()" >
-          <ion-icon name="cart" class="cart-icon"></ion-icon>
+        <ion-tab-button (click)="openCart()">
+          <ion-icon name="cart"></ion-icon>
           <ion-label>Carrito</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
