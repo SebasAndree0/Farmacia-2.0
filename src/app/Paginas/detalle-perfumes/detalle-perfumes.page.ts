@@ -32,6 +32,18 @@ export class DetallePerfumesPage implements OnInit {
     private animationCtrl: AnimationController
   ) {}
 
+  // ✅ SOLO VISUAL: helpers promo
+  isPromo(p: any): boolean {
+    const base = Number(p?.precio ?? 0);
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 && promo < base;
+  }
+
+  getPromoPrice(p: any): number {
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 ? promo : Number(p?.precio ?? 0);
+  }
+
   ngOnInit() {
     this.usuarioId = this.apiUsuario.retornarId();
     this.nombreUsuario = this.apiUsuario.retornarUsuario();
@@ -78,10 +90,7 @@ export class DetallePerfumesPage implements OnInit {
 
         this.apiProducto.addProduct(carrito).subscribe({
           next: async () => {
-            // opcional: animación
-            // this.addToCartCarrito();
-
-            // refresca producto (stock nuevo) (extra por si acaso)
+            // refresca producto (stock nuevo)
             this.recargarProducto();
 
             // abre carrito modal grande
@@ -124,7 +133,10 @@ export class DetallePerfumesPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: CarritoPage,
       cssClass: 'carrito-modal-grande',
-      componentProps: { idUsuario: this.usuarioId },
+      componentProps: {
+        idUsuario: this.usuarioId,
+        nombreUsuario: this.nombreUsuario,
+      },
     });
 
     await modal.present();

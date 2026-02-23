@@ -12,7 +12,6 @@ import { ApiUsuarioService } from '../servicios/api-usuario.service';
   styleUrls: ['./inicio.page.scss'],
 })
 export class InicioPage implements OnInit {
-
   // ====== Buscador ======
   public searchText: string = '';
   public catalogo: any[] = [];
@@ -24,9 +23,9 @@ export class InicioPage implements OnInit {
   public vitrina: any[] = [];
 
   // ====== Categorías ======
-  public catMedicamentos = '';
-  public catCremas = '';
-  public catPerfumes = '';
+  public catMedicamentos = 'medicamento';
+  public catCremas = 'cremas';
+  public catPerfumes = 'perfumes';
 
   private cargasPendientes = 0;
 
@@ -43,13 +42,32 @@ export class InicioPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.catMedicamentos = this.servicio.retornarcategoria();
-    this.catCremas = this.servicio.retornarcategoriacrema();
-    this.catPerfumes = this.servicio.retornarcategoriaperfume();
+    // ✅ defaults seguros (evita '' y evita repetir)
+    this.catMedicamentos =
+      (this.servicio.retornarcategoria() || 'medicamento').toString().trim() || 'medicamento';
+
+    this.catCremas =
+      (this.servicio.retornarcategoriacrema() || 'cremas').toString().trim() || 'cremas';
+
+    this.catPerfumes =
+      (this.servicio.retornarcategoriaperfume() || 'perfumes').toString().trim() || 'perfumes';
+
     this.cargarCatalogo();
   }
 
+  // ✅ anti-duplicados TOTAL por id
+  private dedupeById(items: any[]): any[] {
+    const map = new Map<number, any>();
+    for (const it of items ?? []) {
+      const id = Number(it?.id ?? it?.idProducto);
+      if (!Number.isFinite(id)) continue;
+      map.set(id, it);
+    }
+    return Array.from(map.values());
+  }
+
   private cargarCatalogo() {
+    // reset UI
     this.catalogo = [];
     this.resultados = [];
     this.destacados = [];
@@ -57,27 +75,31 @@ export class InicioPage implements OnInit {
     this.mostrandoResultados = false;
     this.searchText = '';
 
-    this.cargasPendientes = 3;
+    // ✅ categorías únicas + no vacías
+    const cats = Array.from(
+      new Set(
+        [this.catMedicamentos, this.catCremas, this.catPerfumes]
+          .map((c) => (c ?? '').toString().trim())
+          .filter(Boolean)
+      )
+    );
 
-    // 1) Medicamentos
-    this.servicio.getProducto(this.catMedicamentos).subscribe((res: any) => {
-      const meds = Array.isArray(res) ? res : [];
-      this.catalogo = [...this.catalogo, ...meds];
-      this.onCategoriaCargada();
-    });
+    this.cargasPendientes = cats.length;
 
-    // 2) Cremas
-    this.servicio.getProducto(this.catCremas).subscribe((res: any) => {
-      const cremas = Array.isArray(res) ? res : [];
-      this.catalogo = [...this.catalogo, ...cremas];
-      this.onCategoriaCargada();
-    });
+    // Si algo rarísimo deja esto vacío, usamos defaults
+    const finalCats = cats.length ? cats : ['medicamento', 'cremas', 'perfumes'];
+    if (!cats.length) this.cargasPendientes = finalCats.length;
 
-    // 3) Perfumes
-    this.servicio.getProducto(this.catPerfumes).subscribe((res: any) => {
-      const perfs = Array.isArray(res) ? res : [];
-      this.catalogo = [...this.catalogo, ...perfs];
-      this.onCategoriaCargada();
+    finalCats.forEach((cat) => {
+      this.servicio.getProducto(cat).subscribe({
+        next: (res: any) => {
+          const list = Array.isArray(res) ? res : [];
+          // ✅ concateno pero SIEMPRE deduplico
+          this.catalogo = this.dedupeById([...this.catalogo, ...list]);
+          this.onCategoriaCargada();
+        },
+        error: () => this.onCategoriaCargada(),
+      });
     });
   }
 
@@ -87,6 +109,10 @@ export class InicioPage implements OnInit {
     if (!this.searchText) this.resultados = [...this.catalogo];
 
     if (this.cargasPendientes === 0) {
+      // ✅ blindaje final
+      this.catalogo = this.dedupeById(this.catalogo);
+
+      // ordenar
       this.catalogo = [...this.catalogo].sort((a: any, b: any) =>
         String(a?.nombre ?? '').localeCompare(String(b?.nombre ?? ''), 'es')
       );
@@ -97,18 +123,18 @@ export class InicioPage implements OnInit {
   }
 
   private armarHomeNoInfinito() {
-    const meds = this.catalogo.filter(p => (p?.categoria || '').toLowerCase().includes('med'));
-    const cre = this.catalogo.filter(p => (p?.categoria || '').toLowerCase().includes('crem'));
-    const per = this.catalogo.filter(p => (p?.categoria || '').toLowerCase().includes('perfum'));
+    const meds = this.catalogo.filter((p) => (p?.categoria || '').toLowerCase().includes('med'));
+    const cre = this.catalogo.filter((p) => (p?.categoria || '').toLowerCase().includes('crem'));
+    const per = this.catalogo.filter((p) => (p?.categoria || '').toLowerCase().includes('perfum'));
 
     const take = (arr: any[], n: number) => arr.slice(0, n);
 
     const base = [...take(meds, 2), ...take(cre, 2), ...take(per, 2)];
     const faltan = 6 - base.length;
-    const resto = this.catalogo.filter(p => !base.includes(p));
+    const resto = this.catalogo.filter((p) => !base.includes(p));
     this.destacados = faltan > 0 ? [...base, ...take(resto, faltan)] : base;
 
-    const sinDest = this.catalogo.filter(p => !this.destacados.includes(p));
+    const sinDest = this.catalogo.filter((p) => !this.destacados.includes(p));
     this.vitrina = take(sinDest, 8);
   }
 
@@ -139,9 +165,9 @@ export class InicioPage implements OnInit {
     this.resultados = [...this.catalogo];
   }
 
-  // ✅ trackBy
+  // ✅ trackBy robusto (para que no "parpadeen" cards)
   trackByProd(index: number, p: any) {
-    return p?.id ?? p?._id ?? p?.codigo ?? index;
+    return p?.id ?? p?.idProducto ?? p?._id ?? p?.codigo ?? index;
   }
 
   private getUsuarioIdNumber(): number {
@@ -149,29 +175,40 @@ export class InicioPage implements OnInit {
     return Number.isFinite(id) ? id : 0;
   }
 
-  // ✅ VER: ahora navega al detalle real SOLO para medicamentos
+  // ✅ VER: funciona para medicamentos + cremas + perfumes
   verProducto(p: any) {
     const categoria = String(p?.categoria ?? '').toLowerCase();
+    const idProducto = Number(p?.id ?? p?.idProducto);
 
-    // ✅ SOLO medicamentos
-    if (!categoria.includes('med')) {
-      return; // o: alert('Solo medicamentos');
-    }
-
-    const idProducto = Number(p?.id);
     if (!Number.isFinite(idProducto) || idProducto <= 0) {
       alert('Producto sin ID');
+      console.warn('Producto inválido para verProducto():', p);
       return;
     }
 
-    // ✅ tu routing ya tiene: detalle-producto/:idProducto
-    this.navCtrl.navigateForward(`/detalle-producto/${idProducto}`);
+    if (categoria.includes('med')) {
+      this.navCtrl.navigateForward(`/detalle-producto/${idProducto}`);
+      return;
+    }
+
+    if (categoria.includes('crem')) {
+      this.navCtrl.navigateForward(`/detalle-cremas/${idProducto}`);
+      return;
+    }
+
+    if (categoria.includes('perfum')) {
+      this.navCtrl.navigateForward(`/detalle-perfumes/${idProducto}`);
+      return;
+    }
+
+    alert('Categoría desconocida: ' + (p?.categoria ?? ''));
+    console.warn('Categoría desconocida para verProducto():', p);
   }
 
   // ✅ AGREGAR: POST /carrito y abre el carrito al lado
   async agregarAlCarrito(p: any) {
     const idUsuario = this.getUsuarioIdNumber();
-    const idProducto = Number(p?.id);
+    const idProducto = Number(p?.id ?? p?.idProducto);
 
     if (!idUsuario) {
       alert('No hay usuario logueado');
@@ -182,14 +219,29 @@ export class InicioPage implements OnInit {
       return;
     }
 
-    const body = {
-      id: idProducto,
+    // ✅ promo/normal robusto (soporta ambos nombres)
+    const promoActiva = !!(p?.promoActiva ?? p?.promo_activa ?? false);
+    const precioPromo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    const precioNormal = Number(p?.precioNormal ?? p?.precio ?? 0);
+
+    const precioFinal =
+      promoActiva && Number.isFinite(precioPromo) && precioPromo > 0
+        ? precioPromo
+        : (Number.isFinite(precioNormal) ? precioNormal : 0);
+
+    const body: any = {
+      id: idProducto, // backend usa "id" como idProducto
       idUsuario,
       nombre: p?.nombre,
-      precio: Number(p?.precio ?? 0),
+      precio: precioFinal, // ✅ cobra promo si corresponde
       stock: Number(p?.stock ?? 0),
       imagen: p?.imagen,
       cantidad: 1,
+
+      // ✅ opcionales para mostrar promo / checkout consistente
+      promoActiva,
+      precioPromo: Number.isFinite(precioPromo) ? precioPromo : 0,
+      precioNormal: Number.isFinite(precioNormal) ? precioNormal : 0,
     };
 
     this.http.post(`${this.API_URL}/carrito`, body).subscribe({

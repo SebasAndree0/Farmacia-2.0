@@ -1,5 +1,3 @@
-// C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\carrito\carrito.page.ts
-
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
@@ -41,22 +39,6 @@ export class CarritoPage implements OnInit {
     this.cargarCarrito();
   }
 
-  // ✅ CARGAR CARRITO
-  cargarCarrito() {
-    this.cartService.getProductoCarrito(this.usuarioId).subscribe({
-      next: (res: any[]) => {
-        this.cart = res || [];
-        console.log('CARRITO:', this.cart);
-
-        // opcional: dejar total local actualizado
-        this.cartService.totalCarrito(String(this.getTotal()));
-      },
-      error: (err) => {
-        console.error('ERROR CARRITO', err);
-      },
-    });
-  }
-
   close() {
     this.modalCtrl.dismiss();
   }
@@ -94,6 +76,94 @@ export class CarritoPage implements OnInit {
     const idProducto = this.getIdProducto(item);
     return `${idProducto ?? index}-${item?.idUsuario ?? this.usuarioId}`;
   };
+
+  // ============================
+  // ✅ PROMO helpers (para arreglar carritos viejos)
+  // ============================
+  private getPromoInfoFromProducto(prod: any) {
+    const promoActiva = !!(prod?.promoActiva ?? prod?.promo_activa ?? false);
+    const precioPromo = Number(prod?.precioPromo ?? prod?.precio_promo ?? 0);
+    const precioNormal = Number(prod?.precioNormal ?? prod?.precio ?? 0);
+
+    const precioFinal =
+      promoActiva && Number.isFinite(precioPromo) && precioPromo > 0
+        ? precioPromo
+        : (Number.isFinite(precioNormal) ? precioNormal : 0);
+
+    return {
+      promoActiva,
+      precioPromo: Number.isFinite(precioPromo) ? precioPromo : 0,
+      precioNormal: Number.isFinite(precioNormal) ? precioNormal : 0,
+      precioFinal: Number.isFinite(precioFinal) ? precioFinal : 0,
+    };
+  }
+
+  private itemNeedsPromoFix(item: any): boolean {
+    // si ya viene con campos promo, no tocamos
+    const hasPromoFields =
+      item?.promoActiva !== undefined ||
+      item?.precioPromo !== undefined ||
+      item?.precioNormal !== undefined;
+
+    return !hasPromoFields;
+  }
+
+  // ✅ CARGAR CARRITO (y corregir precio con promo si son items viejos)
+  cargarCarrito() {
+    this.cartService.getProductoCarrito(this.usuarioId).subscribe({
+      next: (res: any[]) => {
+        this.cart = res || [];
+        console.log('CARRITO:', this.cart);
+
+        // ✅ total local actualizado
+        this.cartService.totalCarrito(String(this.getTotal()));
+
+        // ✅ FIX items antiguos: recalcular precio con producto real y guardar promo
+        const toFix = (this.cart || []).filter((it) => this.itemNeedsPromoFix(it));
+        if (!toFix.length) return;
+
+        toFix.forEach((item) => {
+          const idProducto = this.getIdProducto(item);
+          if (!idProducto) return;
+
+          this.cartService.obtenerProductoPorID(idProducto).subscribe({
+            next: (prod: any) => {
+              if (!prod) return;
+
+              const promo = this.getPromoInfoFromProducto(prod);
+
+              // si el precio ya coincide, no tocamos
+              const precioActual = Number(item?.precio ?? 0);
+              if (Number.isFinite(precioActual) && precioActual === promo.precioFinal) return;
+
+              const patchBody = {
+                ...item,
+                idUsuario: Number(this.usuarioId),
+                precio: promo.precioFinal,
+
+                // ✅ guardar campos promo para UI/checkout
+                promoActiva: promo.promoActiva,
+                precioPromo: promo.precioPromo,
+                precioNormal: promo.precioNormal,
+              };
+
+              this.cartService.actualizarCarritoPorProducto(idProducto, patchBody).subscribe({
+                next: () => {
+                  // recarga suave para reflejar cambios
+                  this.cargarCarrito();
+                },
+                error: (err) => console.error('PATCH promo carrito ERROR', err),
+              });
+            },
+            error: () => {},
+          });
+        });
+      },
+      error: (err) => {
+        console.error('ERROR CARRITO', err);
+      },
+    });
+  }
 
   // ============================
   // ✅ STOCK REAL (no usar item.stock)
@@ -269,7 +339,7 @@ export class CarritoPage implements OnInit {
     }
   }
 
-  // ✅ TOTAL
+  // ✅ TOTAL (ya respeta promo porque item.precio será precioFinal)
   getTotal() {
     return this.cart.reduce(
       (acc, item) => acc + Number(item?.precio ?? 0) * Number(item?.cantidad ?? 0),

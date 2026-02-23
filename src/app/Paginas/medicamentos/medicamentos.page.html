@@ -49,14 +49,33 @@
       >
         <div class="img-wrap">
           <img [src]="detalles.imagen" alt="" />
+
+          <!-- badge categoría (igual que tú) -->
           <div class="badge">{{ detalles.categoria }}</div>
+
+          <!-- ✅ badge PROMO -->
+          <div class="promo-badge" *ngIf="isPromo(detalles)">PROMO</div>
         </div>
 
         <div class="body">
           <div class="name">{{ detalles.nombre }} {{ detalles.marca }}</div>
 
+          <!-- ✅ precios con promo -->
           <div class="price">
-            {{ detalles.precio | currency:'CLP' }}
+            <ng-container *ngIf="isPromo(detalles); else normalPrice">
+              <div class="price-old">
+                {{ detalles.precio | currency:'CLP' }}
+              </div>
+              <div class="price-new">
+                {{ getPromoPrice(detalles) | currency:'CLP' }}
+              </div>
+            </ng-container>
+
+            <ng-template #normalPrice>
+              <div class="price-new">
+                {{ detalles.precio | currency:'CLP' }}
+              </div>
+            </ng-template>
           </div>
 
           <div class="actions">

@@ -1,0 +1,235 @@
+<!-- C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\producto-form-modal\producto-form-modal.page.html -->
+
+<ion-header class="pfm-header">
+  <ion-toolbar>
+    <ion-title>
+      {{ mode === 'new' ? 'Agregar producto' : 'Editar producto' }}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="close()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="pfm-content" [fullscreen]="true">
+  <div class="pfm-wrap">
+
+    <!-- Preview -->
+    <ion-card class="pfm-preview">
+      <div class="img-box">
+        <img
+          [src]="imgPreview"
+          alt="preview"
+          (error)="imgPreview='assets/placeholder.png'"
+        />
+      </div>
+
+      <ion-card-content class="preview-meta">
+        <div class="t1">{{ form?.get('nombre')?.value || 'Nombre del producto' }}</div>
+
+        <div class="t2">
+          <span>{{ form?.get('marca')?.value || 'Marca' }}</span>
+          <span class="dot">•</span>
+
+          <!-- ✅ muestra LABEL (Medicamentos) en vez del slug -->
+          <span class="chip">{{ categoriaLabelActual }}</span>
+        </div>
+
+        <div class="price-row">
+          <div class="price">
+            <div class="k">Precio normal</div>
+            <div class="v">
+              {{ (form?.get('precioNormal')?.value ?? 0) | currency:'CLP':'symbol-narrow' }}
+            </div>
+          </div>
+
+          <div class="price" *ngIf="form?.get('promoActiva')?.value">
+            <div class="k">Promo</div>
+            <div class="v promo">
+              {{ (form?.get('precioPromo')?.value ?? 0) | currency:'CLP':'symbol-narrow' }}
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Form -->
+    <form class="pfm-form" [formGroup]="form" (ngSubmit)="guardar()">
+
+      <ion-card class="pfm-card">
+        <ion-card-header>
+          <ion-card-title>Datos</ion-card-title>
+          <ion-card-subtitle>Completa los campos obligatorios</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <ion-item lines="full">
+            <ion-label position="stacked">Nombre *</ion-label>
+            <ion-input
+              formControlName="nombre"
+              type="text"
+              placeholder="Ej: Ibuprofeno 400mg"
+              clearInput="true">
+            </ion-input>
+          </ion-item>
+
+          <ion-note class="err" *ngIf="form?.get('nombre')?.touched && form?.get('nombre')?.invalid">
+            Nombre requerido (mín 2 caracteres)
+          </ion-note>
+
+          <ion-item lines="full">
+            <ion-label position="stacked">Marca *</ion-label>
+            <ion-input
+              formControlName="marca"
+              type="text"
+              placeholder="Ej: Pfizer"
+              clearInput="true">
+            </ion-input>
+          </ion-item>
+
+          <ion-note class="err" *ngIf="form?.get('marca')?.touched && form?.get('marca')?.invalid">
+            Marca requerida (mín 2 caracteres)
+          </ion-note>
+
+          <!-- ✅ CATEGORÍA -->
+          <ion-item lines="full">
+            <ion-label position="stacked">Categoría *</ion-label>
+
+            <ion-select
+              interface="alert"
+              formControlName="categoria"
+              placeholder="Selecciona categoría"
+              (ionChange)="onCategoriaChange($event)">
+
+              <ion-select-option
+                *ngFor="let c of categoriasUI; trackBy: trackByCat"
+                [value]="c.slug">
+                {{ c.label }}
+              </ion-select-option>
+            </ion-select>
+
+            <ion-button
+              slot="end"
+              fill="clear"
+              size="small"
+              (click)="addCategoria()"
+              type="button">
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              Nueva
+            </ion-button>
+          </ion-item>
+
+          <!-- Stock (solo edit) -->
+          <ion-item lines="full" *ngIf="mode === 'edit'">
+            <ion-label position="stacked">Stock</ion-label>
+            <ion-input
+              formControlName="stock"
+              type="number"
+              inputmode="numeric"
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+
+          <!-- Precios -->
+          <div class="grid-2">
+            <ion-item lines="full">
+              <ion-label position="stacked">Precio normal *</ion-label>
+              <ion-input
+                formControlName="precioNormal"
+                type="number"
+                inputmode="numeric"
+                placeholder="0">
+              </ion-input>
+            </ion-item>
+
+            <ion-item lines="full">
+              <ion-label position="stacked">Promo activa</ion-label>
+              <ion-toggle formControlName="promoActiva"></ion-toggle>
+            </ion-item>
+          </div>
+
+          <ion-item lines="full" [class.disabled]="!form?.get('promoActiva')?.value">
+            <ion-label position="stacked">Precio promo</ion-label>
+            <ion-input
+              formControlName="precioPromo"
+              type="number"
+              inputmode="numeric"
+              placeholder="0"
+              [disabled]="!form?.get('promoActiva')?.value">
+            </ion-input>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Imagen -->
+      <ion-card class="pfm-card">
+        <ion-card-header>
+          <ion-card-title>Imagen</ion-card-title>
+          <ion-card-subtitle>Puedes pegar URL o subir archivo</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content>
+
+          <ion-item lines="full">
+            <ion-label position="stacked">URL de imagen</ion-label>
+            <ion-input
+              formControlName="imagenUrl"
+              type="url"
+              placeholder="https://...">
+            </ion-input>
+          </ion-item>
+
+          <div class="file-row">
+            <label class="file-btn">
+              <input type="file" accept="image/*" (change)="onFilePicked($event)" />
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <span>Subir imagen</span>
+            </label>
+
+            <ion-button
+              fill="outline"
+              size="small"
+              type="button"
+              (click)="quitarArchivo()">
+              <ion-icon name="trash-outline" slot="start"></ion-icon>
+              Quitar
+            </ion-button>
+          </div>
+
+          <ion-note class="hint" *ngIf="(form?.get('imagenBase64')?.value ?? '')">
+            Imagen cargada desde archivo (base64).
+          </ion-note>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Actions -->
+      <div class="pfm-actions">
+        <ion-button
+          expand="block"
+          type="submit"
+          [disabled]="saving">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          {{ saving ? 'Guardando...' : (mode === 'new' ? 'Crear producto' : 'Guardar cambios') }}
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="clear"
+          color="medium"
+          type="button"
+          (click)="close()">
+          Cancelar
+        </ion-button>
+      </div>
+
+      <div class="bottom-safe"></div>
+    </form>
+
+  </div>
+</ion-content>

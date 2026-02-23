@@ -50,7 +50,7 @@ export class ProductoPage implements OnInit {
     }
   }
   public openMedicamento(){
-    var categoria ="medicamento";
+    var categoria ="medicamentos";
     this.servicio.categoria(categoria);
     this.router.navigate(['/medicamentos']);
 

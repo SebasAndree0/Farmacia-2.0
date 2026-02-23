@@ -1,5 +1,3 @@
-// C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\detalle-producto\detalle-producto.page.ts
-
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,6 +31,18 @@ export class DetalleProductoPage implements OnInit {
     private modalCtrl: ModalController,
     private animationCtrl: AnimationController
   ) {}
+
+  // ✅ SOLO VISUAL: helpers promo
+  isPromo(p: any): boolean {
+    const base = Number(p?.precio ?? 0);
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 && promo < base;
+  }
+
+  getPromoPrice(p: any): number {
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 ? promo : Number(p?.precio ?? 0);
+  }
 
   ngOnInit() {
     this.usuarioId = this.apiUsuario.retornarId();
@@ -82,9 +92,6 @@ export class DetalleProductoPage implements OnInit {
 
         this.apiProducto.addProduct(carrito).subscribe({
           next: async () => {
-            // opcional: animación
-            // this.addToCartCarrito();
-
             // refrescar producto (stock nuevo) (extra por si acaso)
             this.recargarProducto();
 

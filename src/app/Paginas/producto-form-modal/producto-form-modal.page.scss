@@ -1,0 +1,146 @@
+:host {
+  --radius: 18px;
+}
+
+.modal-head ion-toolbar {
+  --background: rgba(18, 18, 18, 0.60);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.modal-content::part(background) {
+  background:
+    radial-gradient(900px 500px at 25% 0%, rgba(33,150,243,0.10), transparent 55%),
+    radial-gradient(900px 500px at 75% 10%, rgba(156,39,176,0.12), transparent 60%),
+    linear-gradient(180deg, #0b0b0c, #09090a);
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 14px 14px 22px;
+}
+
+.preview {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+  img {
+    width: 120px;
+    height: 120px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .hint {
+    font-size: 12px;
+    opacity: .75;
+  }
+}
+
+.form {
+  margin-top: 12px;
+}
+
+.glass {
+  --background: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.soft-btn {
+  border: 0;
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  margin-bottom: 10px;
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &:disabled {
+    opacity: .6;
+  }
+}
+
+.promo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .promo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.img-box {
+  margin-top: 6px;
+}
+
+.file {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.file-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(33, 150, 243, 0.12);
+  border: 1px solid rgba(33, 150, 243, 0.25);
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 900;
+  cursor: pointer;
+
+  input {
+    display: none;
+  }
+}
+
+.footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.primary {
+  --border-radius: 16px;
+  font-weight: 900;
+}

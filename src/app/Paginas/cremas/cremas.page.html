@@ -1,3 +1,5 @@
+<!-- C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\cremas\cremas.page.html -->
+
 <ion-content class="app-bg" [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
@@ -49,14 +51,33 @@
       >
         <div class="img-wrap">
           <img [src]="detalles.imagen" alt="" />
+
+          <!-- badge categoría -->
           <div class="badge">{{ detalles.categoria }}</div>
+
+          <!-- ✅ badge PROMO -->
+          <div class="promo-badge" *ngIf="isPromo(detalles)">PROMO</div>
         </div>
 
         <div class="body">
           <div class="name">{{ detalles.nombre }} {{ detalles.marca }}</div>
 
+          <!-- ✅ precios con promo -->
           <div class="price">
-            {{ detalles.precio | currency:'CLP' }}
+            <ng-container *ngIf="isPromo(detalles); else normalPrice">
+              <div class="price-old">
+                {{ detalles.precio | currency:'CLP' }}
+              </div>
+              <div class="price-new promo-price">
+                {{ getPromoPrice(detalles) | currency:'CLP' }}
+              </div>
+            </ng-container>
+
+            <ng-template #normalPrice>
+              <div class="price-new">
+                {{ detalles.precio | currency:'CLP' }}
+              </div>
+            </ng-template>
           </div>
 
           <div class="actions">

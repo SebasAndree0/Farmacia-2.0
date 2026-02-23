@@ -109,16 +109,30 @@
         <article class="p-card" *ngFor="let p of resultados; trackBy: trackByProd">
           <div class="p-media">
             <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+
+            <!-- chips -->
             <span class="p-chip">{{ p.categoria || 'Producto' }}</span>
+            <span class="p-chip p-chip-promo" *ngIf="(p?.promoActiva === true) && (p?.precioPromo ?? 0) > 0">
+              PROMO
+            </span>
           </div>
 
           <div class="p-body">
             <div class="p-name">{{ p.nombre }}</div>
             <div class="p-meta">{{ p.marca }}</div>
 
-            <div class="p-price" *ngIf="p.precio">
-              $ {{ p.precio | number:'1.0-0' }}
-            </div>
+            <!-- ✅ PRECIO con promo -->
+            <ng-container *ngIf="(p?.promoActiva === true) && (p?.precioPromo ?? 0) > 0; else normalPriceRes">
+              <div class="p-price promo">
+                <span class="old">$ {{ (p?.precioNormal ?? p?.precio ?? 0) | number:'1.0-0' }}</span>
+                <span class="new">CLP {{ (p?.precioPromo ?? 0) | number:'1.0-0' }}</span>
+              </div>
+            </ng-container>
+            <ng-template #normalPriceRes>
+              <div class="p-price" *ngIf="p?.precio">
+                $ {{ p?.precio | number:'1.0-0' }}
+              </div>
+            </ng-template>
 
             <div class="p-actions">
               <button class="ghost" type="button" (click)="verProducto(p)">
@@ -162,6 +176,9 @@
               <div class="slide-media">
                 <img [src]="f.imagen" [alt]="f.nombre" loading="lazy" />
                 <span class="badge">{{ f.categoria || 'Producto' }}</span>
+                <span class="badge badge-promo" *ngIf="(f?.promoActiva === true) && (f?.precioPromo ?? 0) > 0">
+                  PROMO
+                </span>
               </div>
 
               <div class="slide-body">
@@ -169,8 +186,18 @@
 
                 <div class="slide-desc">
                   <span *ngIf="f.marca">{{ f.marca }}</span>
-                  <span *ngIf="f.marca && f.precio"> · </span>
-                  <span *ngIf="f.precio">CLP {{ f.precio | number:'1.0-0' }}</span>
+
+                  <!-- ✅ precio con promo -->
+                  <ng-container *ngIf="(f?.promoActiva === true) && (f?.precioPromo ?? 0) > 0; else normalPriceDest">
+                    <span *ngIf="f.marca"> · </span>
+                    <span class="old">CLP {{ (f?.precioNormal ?? f?.precio ?? 0) | number:'1.0-0' }}</span>
+                    <span class="new">CLP {{ (f?.precioPromo ?? 0) | number:'1.0-0' }}</span>
+                  </ng-container>
+
+                  <ng-template #normalPriceDest>
+                    <span *ngIf="f.marca && f.precio"> · </span>
+                    <span *ngIf="f.precio">CLP {{ f.precio | number:'1.0-0' }}</span>
+                  </ng-template>
                 </div>
 
                 <div class="slide-actions">
@@ -208,16 +235,29 @@
           <article class="p-card" *ngFor="let p of vitrina; trackBy: trackByProd">
             <div class="p-media">
               <img [src]="p.imagen" [alt]="p.nombre" loading="lazy" />
+
               <span class="p-chip">{{ p.categoria || 'Producto' }}</span>
+              <span class="p-chip p-chip-promo" *ngIf="(p?.promoActiva === true) && (p?.precioPromo ?? 0) > 0">
+                PROMO
+              </span>
             </div>
 
             <div class="p-body">
               <div class="p-name">{{ p.nombre }}</div>
               <div class="p-meta">{{ p.marca }}</div>
 
-              <div class="p-price" *ngIf="p.precio">
-                $ {{ p.precio | number:'1.0-0' }}
-              </div>
+              <!-- ✅ PRECIO con promo -->
+              <ng-container *ngIf="(p?.promoActiva === true) && (p?.precioPromo ?? 0) > 0; else normalPriceVit">
+                <div class="p-price promo">
+                  <span class="old">$ {{ (p?.precioNormal ?? p?.precio ?? 0) | number:'1.0-0' }}</span>
+                  <span class="new">CLP {{ (p?.precioPromo ?? 0) | number:'1.0-0' }}</span>
+                </div>
+              </ng-container>
+              <ng-template #normalPriceVit>
+                <div class="p-price" *ngIf="p.precio">
+                  $ {{ p.precio | number:'1.0-0' }}
+                </div>
+              </ng-template>
 
               <div class="p-actions">
                 <button class="ghost" type="button" (click)="verProducto(p)">

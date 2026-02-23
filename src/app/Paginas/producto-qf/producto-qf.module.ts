@@ -1,14 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { IonicModule } from '@ionic/angular';
 
 import { ProductoQfPageRoutingModule } from './producto-qf-routing.module';
-
 import { ProductoQfPage } from './producto-qf.page';
+
 import { ApiProductoService } from '../servicios/api-producto.service';
-import { HttpClientModule } from '@angular/common/http';
+
+// ✅ IMPORTA EL MODULO DEL MODAL
+import { ProductoFormModalPageModule } from '../producto-form-modal/producto-form-modal.module';
 
 @NgModule({
   imports: [
@@ -16,10 +19,12 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     IonicModule,
     ProductoQfPageRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+
+    // ✅ AQUI
+    ProductoFormModalPageModule,
   ],
-  declarations: [ProductoQfPage]
-  ,
-  providers: [ApiProductoService]
+  declarations: [ProductoQfPage],
+  providers: [ApiProductoService],
 })
 export class ProductoQfPageModule {}

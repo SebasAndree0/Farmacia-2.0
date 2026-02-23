@@ -1,3 +1,5 @@
+/* C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\cremas\cremas.page.scss */
+
 /* =========================
    Cremas (Dark + Cream/Gold)
    ========================= */
@@ -310,4 +312,196 @@ ion-tab-button {
 @keyframes auroraMove {
   from { transform: translate3d(-1.5%, -1%, 0) scale(1); }
   to   { transform: translate3d(1.5%, 1%, 0) scale(1.02); }
+}
+
+/* =========================================================
+   ✅ UPGRADE PACK (sin borrar tu SCSS) - Cremas
+   Pegar al FINAL (ya está incluido acá)
+========================================================= */
+
+/* micro mejora general */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* grid más respirado en mobile */
+@media (max-width: 640px) {
+  .page { padding: 14px; padding-bottom: 96px; }
+  .grid { gap: 12px; }
+}
+
+/* HERO más premium */
+.hero h1 {
+  text-shadow: 0 18px 60px rgba(0,0,0,0.55);
+}
+
+.hero p {
+  max-width: 560px;
+}
+
+/* Searchbar: más glass */
+ion-searchbar {
+  --box-shadow: 0 18px 55px rgba(0, 0, 0, 0.52);
+}
+
+/* Pills: hover suave */
+.pill {
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+.pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(251, 191, 36, 0.24);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* CARD: pro */
+.p-card {
+  position: relative;
+  transform: translateZ(0);
+  isolation: isolate;
+}
+
+.p-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 22px;
+  background: radial-gradient(
+    1200px 260px at 50% 0%,
+    rgba(251,191,36,0.16),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 220ms ease;
+  z-index: -1;
+}
+.p-card:hover::before { opacity: 1; }
+
+.p-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 80px rgba(0,0,0,0.55);
+}
+
+/* IMAGEN: overlay */
+.img-wrap {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.img-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(closest-side at 50% 0%, rgba(0,0,0,0.00), rgba(0,0,0,0.35)),
+    linear-gradient(180deg, rgba(0,0,0,0.00), rgba(0,0,0,0.35));
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.p-card:hover .img-wrap img {
+  transform: scale(1.03);
+  transition: transform 260ms ease;
+}
+.img-wrap img {
+  transform: scale(1.0);
+  transition: transform 260ms ease;
+}
+
+.badge {
+  z-index: 3;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.40);
+}
+
+/* CTA más botón */
+.cta {
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+.p-card:hover .cta {
+  transform: translateY(-1px);
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.28);
+}
+
+/* =========================================================
+   ✅ PROMO: badge + precio old/new
+========================================================= */
+
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-old {
+  font-size: 13px;
+  font-weight: 900;
+  opacity: 0.55;
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.price-new {
+  font-size: 22px;
+  font-weight: 1000;
+  letter-spacing: 0.3px;
+  text-shadow: 0 14px 40px rgba(0,0,0,0.45);
+}
+
+/* normal (sin promo) dorado */
+.price .price-new:not(.promo-price) {
+  color: rgba(251, 191, 36, 0.95);
+}
+
+/* precio promo dorado brillante */
+.price .price-new.promo-price {
+  color: rgba(255, 227, 145, 0.98);
+}
+
+/* Badge PROMO */
+.promo-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+
+  color: rgba(255, 227, 145, 0.98);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 196, 0, 0.22),
+    rgba(255, 196, 0, 0.10)
+  );
+  border: 1px solid rgba(255, 196, 0, 0.30);
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 4px rgba(255, 196, 0, 0.10);
+}
+
+.promo-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 196, 0, 0.95);
+  box-shadow:
+    0 0 0 4px rgba(255, 196, 0, 0.14),
+    0 0 18px rgba(255, 196, 0, 0.35);
+}
+
+@media (max-width: 640px) {
+  .price-new { font-size: 20px; }
 }

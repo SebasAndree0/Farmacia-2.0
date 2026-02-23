@@ -1,5 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+// C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\cremas\cremas.page.ts
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonInfiniteScroll, ModalController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+
 import { CarritoPage } from '../carrito/carrito.page';
 import { ApiProductoService } from '../servicios/api-producto.service';
 
@@ -8,67 +12,80 @@ import { ApiProductoService } from '../servicios/api-producto.service';
   templateUrl: './cremas.page.html',
   styleUrls: ['./cremas.page.scss'],
 })
-export class CremasPage implements OnInit {
+export class CremasPage implements OnInit, OnDestroy {
+  @ViewChild(IonInfiniteScroll) public scroll!: IonInfiniteScroll;
 
+  public categoria = 'cremas'; // ✅ default seguro
+  public cart: any[] = [];
+  public resultados: any[] = [];
 
-  @ViewChild(IonInfiniteScroll)
-  public scroll: IonInfiniteScroll;
-  public data: any = []
-  public results = [...this.data];
+  private sub?: Subscription;
 
-  public categoria= '';
-  cart: any = [];
-  public resultados = [...this.cart];
-
-
-  constructor(
-    public servicio: ApiProductoService,
-    private modalCtrl:ModalController
-
-
-  ) { }
+  constructor(public servicio: ApiProductoService, private modalCtrl: ModalController) {}
 
   ngOnInit() {
+    // ✅ si tienes localStorage / método, úsalo, si no queda "cremas"
+    const catLS = (this.servicio.retornarcategoriacrema?.() || '').toString().trim();
+    this.categoria = catLS.length ? catLS : 'cremas';
 
-    this.categoria= this.servicio.retornarcategoriacrema();
-    this.servicio.getProducto(this.categoria).subscribe(res => {
-      this.cart = res;
-      this.resultados = this.cart;
-      if (this.scroll) {
-        this.scroll.complete();
-      }
-
-
+    // ✅ SOLO trae cremas
+    this.sub = this.servicio.getProducto(this.categoria).subscribe((res: any) => {
+      this.cart = Array.isArray(res) ? res : [];
+      this.resultados = [...this.cart];
+      if (this.scroll) this.scroll.complete();
     });
-
-
-
   }
-  handleRefresh(event) {
-    setTimeout(() => {
-      // Any calls to load data go here
-      event.target.complete();
-    }, 2000);
-  };
 
-   handleChange(event) {
-    const query = event.target.value.toLowerCase();
-    this.resultados = this.cart;
-    if (query && query.trim() != ' ') {
-      this.resultados = this.resultados.filter((cart: any) => {
-        return (cart.nombre.toLowerCase().indexOf(query.toLowerCase()) > -1)||(cart.categoria.toLowerCase().indexOf(query.toLowerCase()) > -1)||(cart.marca.toLowerCase().indexOf(query.toLowerCase()) > -1);
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  handleRefresh(event: any) {
+    // ✅ refresca volviendo a pedir SOLO cremas
+    this.sub?.unsubscribe();
+    this.sub = this.servicio.getProducto(this.categoria).subscribe((res: any) => {
+      this.cart = Array.isArray(res) ? res : [];
+      this.resultados = [...this.cart];
+      event?.target?.complete?.();
+      if (this.scroll) this.scroll.complete();
+    });
+  }
+
+  handleChange(event: any) {
+    const query = (event?.target?.value ?? '').toString().toLowerCase().trim();
+
+    this.resultados = [...this.cart];
+
+    if (query) {
+      this.resultados = this.resultados.filter((p: any) => {
+        const nombre = (p?.nombre ?? '').toString().toLowerCase();
+        const marca = (p?.marca ?? '').toString().toLowerCase();
+        const categoria = (p?.categoria ?? '').toString().toLowerCase();
+        return nombre.includes(query) || marca.includes(query) || categoria.includes(query);
       });
     }
   }
 
-  async openCart(){
-    let modal= await this.modalCtrl.create({
-      component: CarritoPage,
-      cssClass: 'carrito'
-    });
-    modal.present();
-
+  // =========================
+  // ✅ PROMO (mínimo y seguro)
+  // =========================
+  getPromoPrice(p: any): number {
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    const base = Number(p?.precio ?? 0);
+    return promo > 0 ? promo : base;
   }
 
+  isPromo(p: any): boolean {
+    const base = Number(p?.precio ?? 0);
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 && promo < base;
+  }
 
+  async openCart() {
+    const modal = await this.modalCtrl.create({
+      component: CarritoPage,
+      cssClass: 'carrito',
+    });
+    await modal.present();
+  }
 }

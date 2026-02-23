@@ -28,7 +28,7 @@ export class MedicamentosQfPage implements OnInit {
       marca: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       imagen: ['', Validators.required],
       precio: [0, [Validators.required, Validators.min(1)]],
-      categoria: ['medicamento'],
+      categoria: ['medicamentos'],
       detalle: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
       receta: ['', Validators.required],
       cantidad: [1],

@@ -42,15 +42,35 @@
           <div class="top">
             <div class="name" title="{{ item?.nombre }}">{{ item?.nombre }}</div>
 
+            <!-- ✅ total por item -->
             <div class="price">
               CLP{{ ((item?.precio ?? 0) * (item?.cantidad ?? 0)) | number:'1.0-0' }}
             </div>
           </div>
 
+          <!-- ✅ Promo strip -->
           <div class="meta">
-            <span class="unit">
-              Unit: CLP{{ (item?.precio ?? 0) | number:'1.0-0' }}
-            </span>
+            <!-- Si promo activa y existe precioNormal y precioPromo -->
+            <ng-container *ngIf="(item?.promoActiva === true) && (item?.precioPromo ?? 0) > 0">
+              <span class="badge-promo">PROMO</span>
+
+              <span class="unit">
+                Unit:
+                <span class="old">
+                  CLP{{ (item?.precioNormal ?? 0) | number:'1.0-0' }}
+                </span>
+                <span class="new">
+                  CLP{{ (item?.precioPromo ?? item?.precio ?? 0) | number:'1.0-0' }}
+                </span>
+              </span>
+            </ng-container>
+
+            <!-- Si NO promo -->
+            <ng-container *ngIf="!(item?.promoActiva === true) || !((item?.precioPromo ?? 0) > 0)">
+              <span class="unit">
+                Unit: CLP{{ (item?.precio ?? 0) | number:'1.0-0' }}
+              </span>
+            </ng-container>
           </div>
 
           <div class="bottom">

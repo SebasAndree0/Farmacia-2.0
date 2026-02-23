@@ -32,6 +32,18 @@ export class DetalleCremasPage implements OnInit {
     private animationCtrl: AnimationController
   ) {}
 
+  // ✅ SOLO VISUAL: helpers promo
+  isPromo(p: any): boolean {
+    const base = Number(p?.precio ?? 0);
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 && promo < base;
+  }
+
+  getPromoPrice(p: any): number {
+    const promo = Number(p?.precioPromo ?? p?.precio_promo ?? 0);
+    return promo > 0 ? promo : Number(p?.precio ?? 0);
+  }
+
   ngOnInit() {
     this.usuarioId = this.apiUsuario.retornarId();
     this.nombreUsuario = this.apiUsuario.retornarUsuario();
@@ -55,6 +67,7 @@ export class DetalleCremasPage implements OnInit {
 
   addToCart(nombre: string, precio: number, imagen: string, _cantidad: number, stock: number) {
     const stockActual = Number(stock ?? 0);
+
     if (stockActual <= 0) {
       alert('Sin stock suficiente');
       return;
@@ -120,15 +133,17 @@ export class DetalleCremasPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: CarritoPage,
       cssClass: 'carrito-modal-grande',
-      componentProps: { idUsuario: this.usuarioId },
+      componentProps: {
+        idUsuario: this.usuarioId,
+        nombreUsuario: this.nombreUsuario,
+      },
     });
 
     await modal.present();
 
-    // ✅ AQUÍ ESTABA EL FALLO: antes no escuchabas el dismiss
+    // escuchar dismiss
     const { data } = await modal.onDidDismiss();
 
-    // Si en el carrito apretaron COMPRAR, CarritoPage devuelve { action:'checkout', total, cart, usuarioId }
     if (data?.action === 'checkout') {
       await this.router.navigate(['/medio-pago'], {
         state: {

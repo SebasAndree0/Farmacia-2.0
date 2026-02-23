@@ -16,6 +16,14 @@
   --acc-2: #38bdf8;
   --ok: #22c55e;
 
+  /* ✅ promo */
+  --promo-bg: rgba(255, 214, 0, 0.18);
+  --promo-br: rgba(255, 214, 0, 0.35);
+  --promo-tx: rgba(255, 255, 255, 0.92);
+
+  /* ✅ precio */
+  --price: #f5c518;
+
   display: block;
   color: var(--text);
 }
@@ -239,6 +247,22 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
   font-weight: 900;
   backdrop-filter: blur(12px);
 }
+
+/* ✅ promo badge en slides (se pone arriba del badge normal) */
+.badge-promo{
+  position: absolute;
+  left: 14px;
+  bottom: 52px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--promo-bg);
+  border: 1px solid var(--promo-br);
+  color: var(--promo-tx);
+  font-size: 0.78rem;
+  font-weight: 950;
+  backdrop-filter: blur(12px);
+}
+
 .slide-body {
   padding: 16px 16px 14px;
   display: flex;
@@ -248,6 +272,20 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
 }
 .slide-title { font-size: 1.15rem; font-weight: 950; }
 .slide-desc { color: var(--muted); font-size: 0.92rem; }
+
+/* ✅ precios promo en slide */
+.slide-desc .old{
+  opacity: .62;
+  text-decoration: line-through;
+  margin-left: 8px;
+  font-weight: 850;
+}
+.slide-desc .new{
+  margin-left: 8px;
+  font-weight: 950;
+  color: var(--price);
+}
+
 .slide-actions { margin-top: 6px; display: flex; justify-content: flex-end; }
 .btn-mini {
   --background: rgba(45, 212, 255, 0.16);
@@ -286,7 +324,14 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 22px rgba(0,0,0,0.30);
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
 }
+.p-card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(45, 212, 255, 0.22);
+  background: rgba(255, 255, 255, 0.07);
+}
+
 .p-media {
   position: relative;
   padding: 10px;
@@ -295,13 +340,15 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
 }
 .p-media img {
   width: 100%;
-  height: 150px;         /* ✅ clave: evita “gigante” */
-  object-fit: contain;   /* ✅ no corta, no deforma */
+  height: 150px;
+  object-fit: contain;
   display: block;
   border-radius: 14px;
   background: rgba(255,255,255,0.02);
   border: 1px solid rgba(255,255,255,0.06);
 }
+
+/* ✅ chips: categoría arriba, promo abajo (NO se montan) */
 .p-chip {
   position: absolute;
   left: 12px;
@@ -313,7 +360,23 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
   background: rgba(0,0,0,0.45);
   border: 1px solid rgba(255,255,255,0.14);
   color: rgba(255,255,255,0.88);
+  backdrop-filter: blur(12px);
 }
+
+.p-chip-promo{
+  position: absolute;
+  left: 12px;
+  top: 44px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 950;
+  background: var(--promo-bg);
+  border: 1px solid var(--promo-br);
+  color: var(--promo-tx);
+  backdrop-filter: blur(12px);
+}
+
 .p-body { padding: 12px; display: grid; gap: 6px; }
 .p-name {
   font-weight: 950;
@@ -324,7 +387,54 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
   overflow: hidden;
 }
 .p-meta { color: rgba(255,255,255,0.62); font-weight: 800; font-size: 0.85rem; }
-.p-price { color: #f5c518; font-weight: 950; }
+
+/* ✅ precio normal */
+.p-price {
+  color: var(--price);
+  font-weight: 950;
+}
+
+/* ✅ precio promo PRO (el que arregla lo feo) */
+.p-price.promo{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.p-price.promo .new{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-weight: 950;
+  letter-spacing: .2px;
+  line-height: 1.1;
+  color: var(--price);
+}
+
+.p-price.promo .new .cur{
+  font-size: 14px;
+  opacity: .95;
+}
+
+.p-price.promo .new .val{
+  font-size: 22px;
+}
+
+.p-price.promo .new .clp{
+  font-size: 12px;
+  opacity: .72;
+  font-weight: 850;
+}
+
+.p-price.promo .old{
+  font-size: 12px;
+  opacity: .62;
+  text-decoration: line-through;
+  color: rgba(255,255,255,0.75);
+  font-weight: 850;
+}
+
 .p-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
 .p-actions .ghost, .p-actions .solid {
   height: 40px;
@@ -332,9 +442,12 @@ ion-slides.pro-slides { --bullet-background: rgba(255, 255, 255, 0.25); --bullet
   font-weight: 950;
   border: 1px solid rgba(255,255,255,0.12);
   cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
 }
 .p-actions .ghost { background: transparent; color: rgba(255,255,255,0.85); }
 .p-actions .solid { background: rgba(45,212,255,0.18); color: #fff; border-color: rgba(45,212,255,0.28); }
+.p-actions .ghost:hover{ border-color: rgba(255,255,255,0.22); transform: translateY(-1px); }
+.p-actions .solid:hover{ background: rgba(45,212,255,0.24); transform: translateY(-1px); }
 
 /* CTA final */
 .cta-more { margin-top: 12px; }

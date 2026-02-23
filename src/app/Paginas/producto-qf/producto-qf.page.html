@@ -1,64 +1,158 @@
-<ion-header>
-  <ion-toolbar color="">
-    <ion-title>Categoria</ion-title>
+<!-- C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\producto-qf\producto-qf.page.html -->
 
+<ion-header class="glass-header" translucent="true">
+  <ion-toolbar>
+    <ion-title>Catálogo (QF)</ion-title>
 
-    <ion-toolbar color="">
-      <ion-searchbar color="warning" placeholder = "Buscar nombre o marca o categoria" [debounce]="1000" animated (ionChange)="handleChange($event)"></ion-searchbar>
-    </ion-toolbar>
+    <ion-buttons slot="end">
+      <!-- ✅ Salir -->
+      <ion-button fill="clear" (click)="salir()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+
+      <!-- Refresh -->
+      <ion-button fill="clear" (click)="handleRefreshManual()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 
+  <!-- Searchbar -->
+  <ion-toolbar class="search-toolbar">
+    <div class="search-wrap">
+      <ion-searchbar
+        mode="ios"
+        placeholder="Buscar producto, marca o categoría"
+        [debounce]="250"
+        (ionInput)="handleChange($event)"
+        animated>
+      </ion-searchbar>
+
+      <button class="clear-search" *ngIf="searchText" (click)="limpiarBusqueda()">
+        Limpiar
+      </button>
+    </div>
+  </ion-toolbar>
+
+  <!-- Filtros + contadores -->
+  <ion-toolbar class="filters-toolbar">
+    <ion-segment [(ngModel)]="filtroCat" (ionChange)="onSegmentChange()">
+      <ion-segment-button value="all">
+        <ion-label>Todo</ion-label>
+      </ion-segment-button>
+
+      <!-- ✅ categorías desde backend/service -->
+      <ion-segment-button
+        *ngFor="let c of categoriasUI; trackBy: trackByCat"
+        [value]="c.slug">
+        <ion-label>{{ c.label }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div class="counts">
+      <span class="count-pill">Total: <b>{{ data?.length || 0 }}</b></span>
+      <span class="count-pill">Mostrando: <b>{{ results?.length || 0 }}</b></span>
+    </div>
+  </ion-toolbar>
 </ion-header>
-<ion-content>
 
-
+<ion-content class="app-bg" [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline"></ion-refresher-content>
   </ion-refresher>
-  <ion-list>
-    <ion-card color="" (click)="openMedicamento()" >
-      <ion-card-header  >
-        <ion-card-title >
-          <h1 id = "card">
-           medicamentos
-          </h1></ion-card-title>
-      </ion-card-header>
-    </ion-card>
-    <br>
-    <ion-card color="" (click)="openCremas()" >
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-           cremas
-          </h1></ion-card-title>
-      </ion-card-header>
 
-    </ion-card>
+  <div class="page">
+    <section class="section">
+      <div class="section-head row-between">
+        <div>
+          <div class="title">Productos</div>
+          <div class="sub">Gestiona y edita productos desde aquí.</div>
+        </div>
 
-    <br>
-    <ion-card color="" (click)="openPerfumes()" >
-      <ion-card-header >
-        <ion-card-title >
-          <h1 id = "card">
-           perfumes
-          </h1></ion-card-title>
-      </ion-card-header>
+        <div class="legend">
+          <span class="tag">Admin</span>
+          <span class="tag tag-soft">Promo</span>
+          <span class="tag tag-soft">Imagen</span>
+        </div>
+      </div>
 
-  </ion-card>
+      <!-- Lista -->
+      <div class="admin-list" *ngIf="(results?.length || 0) > 0">
+        <article class="admin-row" *ngFor="let p of results; trackBy: trackByProd">
+          <div class="media">
+            <img
+              [src]="p.imagen || p.imagen_url || p.imagenBase64 || 'assets/placeholder.png'"
+              [alt]="p.nombre"
+              loading="lazy" />
+          </div>
 
-  <ion-footer>
-    <ion-toolbar>
-      <ion-tabs>
-        <ion-tab-bar slot="bottom">
-          <ion-tab-button [routerLink]="['/']" >
-            <ion-icon name="log-out-outline"></ion-icon>
-            <ion-label>Salir</ion-label>
+          <div class="info">
+            <div class="top">
+              <div class="name">{{ p.nombre }}</div>
 
-          </ion-tab-button>
+              <span class="chip"
+                    [class.chip-promo]="p?.promoActiva || (p?.precio_promo > 0)"
+                    [class.chip-med]="normalizeCat(p) === 'medicamento'"
+                    [class.chip-cre]="normalizeCat(p) === 'cremas'"
+                    [class.chip-per]="normalizeCat(p) === 'perfumes'">
+                <!-- ✅ label bonito -->
+                {{ labelCat(p) }}
+              </span>
+            </div>
 
+            <div class="meta">
+              <span class="brand">{{ p.marca || '—' }}</span>
+              <span class="dot">•</span>
 
-        </ion-tab-bar>
-      </ion-tabs>
-    </ion-toolbar>
-  </ion-footer>
+              <!-- precio -->
+              <ng-container *ngIf="(p?.promoActiva && (p?.precioPromo ?? p?.precio_promo) > 0); else normalPrice">
+                <span class="price promo">
+                  $ {{ ((p?.precioPromo ?? p?.precio_promo) || 0) | number:'1.0-0' }}
+                </span>
+                <span class="old">
+                  $ {{ ((p?.precioNormal ?? p?.precio) || 0) | number:'1.0-0' }}
+                </span>
+              </ng-container>
 
+              <ng-template #normalPrice>
+                <span class="price">
+                  $ {{ ((p?.precioNormal ?? p?.precio) || 0) | number:'1.0-0' }}
+                </span>
+              </ng-template>
+
+              <span class="dot">•</span>
+              <span class="stock">Stock: <b>{{ p.stock }}</b></span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <!-- ✅ SOLO EDITAR -->
+            <button class="icon-btn" type="button" (click)="openProductoForm('edit', p)" title="Editar">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+
+            <button class="icon-btn danger" type="button" (click)="eliminarProducto(p)" title="Eliminar">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+          </div>
+        </article>
+      </div>
+
+      <!-- Empty -->
+      <div class="empty" *ngIf="(results?.length || 0) === 0">
+        <ion-icon name="search-outline"></ion-icon>
+        <div class="empty-title">Sin resultados</div>
+        <div class="empty-sub">Cambia el filtro o busca por otro texto.</div>
+      </div>
+    </section>
+
+    <div class="bottom-space"></div>
+  </div>
+
+  <!-- FAB crear -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="openProductoForm('new')">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

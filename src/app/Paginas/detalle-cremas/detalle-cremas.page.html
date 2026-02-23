@@ -1,3 +1,5 @@
+<!-- C:\Farmacia2026\Farmacia-2.0\src\app\Paginas\detalle-cremas\detalle-cremas.page.html -->
+
 <ion-header class="glass-header">
   <ion-toolbar>
     <ion-title>Detalle Cremas</ion-title>
@@ -35,6 +37,9 @@
         <div class="meta">
           <span class="pill">{{ productoActivo.categoria }}</span>
           <span class="pill soft" *ngIf="productoActivo.marca">{{ productoActivo.marca }}</span>
+
+          <!-- ✅ PROMO (solo visual) -->
+          <span class="pill promo" *ngIf="isPromo(productoActivo)">PROMO</span>
         </div>
       </div>
 
@@ -42,7 +47,20 @@
       <div class="content">
         <div class="top">
           <div class="name">{{ productoActivo.nombre }}</div>
-          <div class="price">{{ productoActivo.precio | currency:'CLP' }}</div>
+
+          <!-- ✅ precio con promo (solo visual) -->
+          <div class="price">
+            <ng-container *ngIf="isPromo(productoActivo); else normalPrice">
+              <div class="price-old">{{ productoActivo.precio | currency:'CLP' }}</div>
+              <div class="price-new promo-price">
+                {{ getPromoPrice(productoActivo) | currency:'CLP' }}
+              </div>
+            </ng-container>
+
+            <ng-template #normalPrice>
+              <div class="price-new">{{ productoActivo.precio | currency:'CLP' }}</div>
+            </ng-template>
+          </div>
         </div>
 
         <div class="desc" *ngIf="productoActivo.detalle">
