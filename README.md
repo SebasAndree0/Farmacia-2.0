@@ -30,13 +30,21 @@ This project was originally created a few years ago and has been **heavily impro
 - Manage promotions
 - Update price, stock, name and description
 - Upload images (URL / base64)
+- 
+![Farmacia 2.0](https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_900.png)
 
 ### Client
 - Browse products
 - Manage cart and purchases
 - Access personal profile
 
-![Farmacia 2.0](https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_900.png)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_906.png" width="800"/>
+</p>
+
+
+
 ---
 
 ## 🛒 Online Store Features
