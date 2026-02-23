@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_900.png" width="900"/>
-</p>
 
 # 💊 Farmacia 2.0
 
@@ -55,6 +52,9 @@ This project started years ago and was **heavily improved and modernized**, with
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_904.png" width="900"/>
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_900.png" width="900"/>
 </p>
 
 ### 🧑‍⚕️ Pharmacist (QF)
