@@ -32,6 +32,7 @@ This project was originally created a few years ago and has been **heavily impro
 - Manage cart and purchases
 - Access personal profile
 
+![Farmacia 2.0](https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_900.png)
 ---
 
 ## 🛒 Online Store Features
