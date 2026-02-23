@@ -20,6 +20,10 @@ This project was originally created a few years ago and has been **heavily impro
 ### Admin
 - Create, edit and delete users
 - Full system management
+- 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SebasAndree0/Farmacia-2.0/main/Screenshot_904.png" width="800"/>
+</p>
 
 ### Pharmacist (QF)
 - Create, edit and delete products
